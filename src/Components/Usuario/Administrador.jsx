@@ -1,47 +1,95 @@
-import React, { useState } from 'react';
-
-const estados = [
-  { value: 'activo', label: 'Activo' },
-  { value: 'inactivo', label: 'Inactivo' }
-];
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 const Administrador = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [newUser, setNewUser] = useState({ nombres: '', email: '', contrasena: '', estado: '' });
-  const [users, setUsers] = useState([
-    { nombres: 'Juan Pérez', email: 'juan@example.com', estado: 'activo' },
-    { nombres: 'Maria López', email: 'maria@example.com', estado: 'inactivo' }
-  ]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [newUser, setNewUser] = useState({ nombre: '', email: '', contrasena: '', activo: true });
+  const [editUser, setEditUser] = useState(null);
+  const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await axios.get('http://10.16.1.41:8082/api/v1/usuarios');
+      if (response.status === 200) {
+        setUsers(response.data);
+      }
+    } catch (error) {
+      console.error('Error al obtener los usuarios:', error);
+    }
+  };
 
   const openModal = () => {
     setIsModalOpen(true);
   };
 
+  const openEditModal = (user) => {
+    setEditUser(user);
+    setIsEditModalOpen(true);
+  };
+
   const closeModal = () => {
     setIsModalOpen(false);
-    setNewUser({ nombres: '', email: '', contrasena: '', estado: '' });
+    setIsEditModalOpen(false);
+    setNewUser({ nombre: '', email: '', contrasena: '', activo: true });
+    setEditUser(null);
     setErrors({});
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser({ ...newUser, [name]: value });
+    const { name, value, type, checked } = e.target;
+    if (isEditModalOpen) {
+      setEditUser({ ...editUser, [name]: type === 'checkbox' ? checked : value });
+    } else {
+      setNewUser({ ...newUser, [name]: type === 'checkbox' ? checked : value });
+    }
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     let currentErrors = {};
-    if (!newUser.nombres) currentErrors.nombres = 'Este campo debe estar completo';
+    if (!newUser.nombre) currentErrors.nombre = 'Este campo debe estar completo';
     if (!newUser.email) currentErrors.email = 'Este campo debe estar completo';
     if (!newUser.contrasena) currentErrors.contrasena = 'Este campo debe estar completo';
-    if (!newUser.estado) currentErrors.estado = 'Este campo debe estar completo';
 
     setErrors(currentErrors);
 
     if (Object.keys(currentErrors).length === 0) {
-      setUsers([...users, newUser]);
-      closeModal();
+      try {
+        const response = await axios.post('http://10.16.1.41:8082/api/v1/usuario', newUser);
+        if (response.status === 200) {
+          fetchUsers();
+          closeModal();
+        }
+      } catch (error) {
+        console.error('Error al guardar el usuario:', error);
+      }
+    }
+  };
+
+  const handleUpdate = async () => {
+    let currentErrors = {};
+    if (!editUser.nombre) currentErrors.nombre = 'Este campo debe estar completo';
+    if (!editUser.email) currentErrors.email = 'Este campo debe estar completo';
+    if (!editUser.contrasena) currentErrors.contrasena = 'Este campo debe estar completo';
+
+    setErrors(currentErrors);
+
+    if (Object.keys(currentErrors).length === 0) {
+      try {
+        const response = await axios.put('http://10.16.1.41:8082/api/v1/usuario', editUser);
+        if (response.status === 200) {
+          fetchUsers();
+          closeModal();
+        }
+      } catch (error) {
+        console.error('Error al actualizar el usuario:', error);
+      }
     }
   };
 
@@ -50,7 +98,7 @@ const Administrador = () => {
   };
 
   const filteredUsers = users.filter(user =>
-    user.nombres.toLowerCase().includes(search.toLowerCase())
+    user.nombre.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
@@ -69,7 +117,7 @@ const Administrador = () => {
       <button onClick={openModal} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium mb-4">Agregar Usuario</button>
 
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-      <thead className="bg-indigo-500 text-white">
+        <thead className="bg-indigo-500 text-white">
           <tr>
             <th className="py-2 px-4 border-b">Nombres</th>
             <th className="py-2 px-4 border-b">Email</th>
@@ -80,12 +128,11 @@ const Administrador = () => {
         <tbody>
           {filteredUsers.map((user, index) => (
             <tr key={index}>
-              <td className="py-2 px-4 border-b">{user.nombres}</td>
+              <td className="py-2 px-4 border-b">{user.nombre}</td>
               <td className="py-2 px-4 border-b">{user.email}</td>
-              <td className="py-2 px-4 border-b">{user.estado}</td>
+              <td className="py-2 px-4 border-b">{user.activo ? 'Activo' : 'Inactivo'}</td>
               <td className="py-2 px-4 border-b">
-                <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium mr-2">Editar</button>
-                <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Eliminar</button>
+                <button onClick={() => openEditModal(user)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium mr-2">Editar</button>
               </td>
             </tr>
           ))}
@@ -93,26 +140,73 @@ const Administrador = () => {
       </table>
 
       {isModalOpen && (
+      
+      <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-96">
+        <h3 className="text-xl font-bold mb-4">Agregar Usuario</h3>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Nombres</label>
+          <input
+            type="text"
+            name="nombre"
+            value={newUser.nombre}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
+          />
+          {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Email</label>
+          <input
+            type="email"
+            name="email"
+            value={newUser.email}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
+          />
+          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+        </div>
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700">Contraseña</label>
+          <input
+            type="password"
+            name="contrasena"
+            value={newUser.contrasena}
+            onChange={handleInputChange}
+            className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
+          />
+          {errors.contrasena && <p className="text-red-500 text-xs mt-1">{errors.contrasena}</p>}
+        </div>
+        <div className="flex justify-center space-x-4">
+          <button onClick={closeModal} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Cancelar</button>
+          <button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Guardar</button>
+        </div>
+      </div>
+    </div>
+      )}
+
+      {isEditModalOpen && (
+       
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-            <h3 className="text-xl font-bold mb-4">Agregar Usuario</h3>
+            <h3 className="text-xl font-bold mb-4">Editar Usuario</h3>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Nombres</label>
               <input
                 type="text"
-                name="nombres"
-                value={newUser.nombres}
+                name="nombre"
+                value={editUser.nombre}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
-              {errors.nombres && <p className="text-red-500 text-xs mt-1">{errors.nombres}</p>}
+              {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Email</label>
               <input
                 type="email"
                 name="email"
-                value={newUser.email}
+                value={editUser.email}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
@@ -123,32 +217,27 @@ const Administrador = () => {
               <input
                 type="password"
                 name="contrasena"
-                value={newUser.contrasena}
+                value={editUser.contrasena}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
               {errors.contrasena && <p className="text-red-500 text-xs mt-1">{errors.contrasena}</p>}
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Estado</label>
-              <select
-                name="estado"
-                value={newUser.estado}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
-              >
-                <option value="" disabled>Seleccionar un estado</option>
-                {estados.map((estado) => (
-                  <option key={estado.value} value={estado.value}>
-                    {estado.label}
-                  </option>
-                ))}
-              </select>
-              {errors.estado && <p className="text-red-500 text-xs mt-1">{errors.estado}</p>}
+              <label className="inline-flex items-center">
+                <input
+                  type="checkbox"
+                  name="activo"
+                  checked={editUser.activo}
+                  onChange={handleInputChange}
+                  className="form-checkbox h-5 w-5 text-indigo-600"
+                />
+                <span className="ml-2 text-sm text-gray-700">Activo</span>
+              </label>
             </div>
             <div className="flex justify-center space-x-4">
               <button onClick={closeModal} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Cancelar</button>
-              <button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Guardar</button>
+              <button onClick={handleUpdate} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Guardar</button>
             </div>
           </div>
         </div>
@@ -157,4 +246,4 @@ const Administrador = () => {
   );
 };
 
-export default Administrador;
+export default Administrador
