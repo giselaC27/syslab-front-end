@@ -613,36 +613,36 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                 </div>
                 <div>
                   <label htmlFor="posibleDiagnosticoEditar" className="block text-sm font-medium text-gray-700">Posible Diagnóstico</label>
-                  <input
-                    type="text"
-                    id="posibleDiagnosticoEditar"
-                    name="posibleDiagnosticoEditar"
-                    value={editingPatient.posibleDiagnostico}
-                    onChange={(e) => setEditingPatient({...editingPatient, posibleDiagnostico: e.target.value})}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+    id="posibleDiagnosticoEditar"
+    name="posibleDiagnosticoEditar"
+    value={editingPatient.posibleDiagnostico}
+    onChange={(e) => setEditingPatient({...editingPatient, posibleDiagnostico: e.target.value})}
+    rows="3"
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+  ></textarea>
                 </div>
                 <div>
                   <label htmlFor="medicacionEditar" className="block text-sm font-medium text-gray-700">Medicación</label>
-                  <input
-                    type="text"
-                    id="medicacionEditar"
-                    name="medicacionEditar"
-                    value={editingPatient.medicacion}
-                    onChange={(e) => setEditingPatient({...editingPatient, medicacion: e.target.value})}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+    id="medicacionEditar"
+    name="medicacionEditar"
+    value={editingPatient.medicacion}
+    onChange={(e) => setEditingPatient({...editingPatient, medicacion: e.target.value})}
+    rows="3"
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+  ></textarea>
                 </div>
                 <div>
                   <label htmlFor="enfermedadCatastroficaEditar" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas</label>
-                  <input
-                    type="text"
-                    id="enfermedadCatastroficaEditar"
-                    name="enfermedadCatastroficaEditar"
-                    value={editingPatient.enfermedadCatastrofica}
-                    onChange={(e) => setEditingPatient({...editingPatient, enfermedadCatastrofica: e.target.value})}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+    id="enfermedadCatastroficaEditar"
+    name="enfermedadCatastroficaEditar"
+    value={editingPatient.enfermedadCatastrofica}
+    onChange={(e) => setEditingPatient({...editingPatient, enfermedadCatastrofica: e.target.value})}
+    rows="3"
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+  ></textarea>
                 </div>
                 <div>
                   <label htmlFor="dependenciaEditar" className="block text-sm font-medium text-gray-700">Cargo/Institución</label>

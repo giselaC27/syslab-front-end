@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, tiposPacientes, generos }) => {
-  const [formValues, setFormValues] = useState({
+  const initialFormValues  = {
     cedulaIdentidad: '',
     nombre: '',
     primerApellido: '',
@@ -18,7 +18,8 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
     dependencia: '',
     tipoPaciente: '',
     empresa: '',
-  });
+  };
+  const [formValues, setFormValues] = useState(initialFormValues);
   const [isFormValid, setIsFormValid] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -51,6 +52,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
         setSuccess(true);
         setIsLoading(false);
         onSave();
+        setFormValues(initialFormValues);
         setTimeout(() => {
           onClose();
           setSuccess(false);
@@ -176,36 +178,36 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
                 </div>
                 <div>
                   <label htmlFor="posibleDiagnostico" className="block text-sm font-medium text-gray-700">Posible Diagnóstico</label>
-                  <input
-                    type="text"
-                    id="posibleDiagnostico"
-                    name="posibleDiagnostico"
-                    value={formValues.posibleDiagnostico}
-                    onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+      id="posibleDiagnostico"
+      name="posibleDiagnostico"
+      value={formValues.posibleDiagnostico}
+      onChange={handleChange}
+      rows="3"
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+    ></textarea>
                 </div>
                 <div>
                   <label htmlFor="medicacion" className="block text-sm font-medium text-gray-700">Medicación</label>
-                  <input
-                    type="text"
-                    id="medicacion"
-                    name="medicacion"
-                    value={formValues.medicacion}
-                    onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+      id="medicacion"
+      name="medicacion"
+      value={formValues.medicacion}
+      onChange={handleChange}
+      rows="3"
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+    ></textarea>
                 </div>
                 <div>
                   <label htmlFor="enfermedadCatastrofica" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas</label>
-                  <input
-                    type="text"
-                    id="enfermedadCatastrofica"
-                    name="enfermedadCatastrofica"
-                    value={formValues.enfermedadCatastrofica}
-                    onChange={handleChange}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+      id="enfermedadCatastrofica"
+      name="enfermedadCatastrofica"
+      value={formValues.enfermedadCatastrofica}
+      onChange={handleChange}
+      rows="3"
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+    ></textarea>
                 </div>
                 <div>
                   <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">Cargo/Institución</label>
