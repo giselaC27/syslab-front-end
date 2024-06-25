@@ -22,10 +22,12 @@ const App = () => {
 
   return (
     <div className="App">
+      
       {isLoggedIn ? (
         <Panel onLogout={handleLogout} username={username} />
       ) : (
-        <Login onLogin={handleLogin} />
+        //<Login onLogin={handleLogin} />
+        <Panel onLogout={handleLogout} username={username} />
       )}
     </div>
   );

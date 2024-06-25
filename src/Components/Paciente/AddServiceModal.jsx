@@ -1,22 +1,39 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
-const Modal = ({ isOpen, onClose, onAdd }) => {
+const AddServiceModal = ({ isOpen, onClose, onAdd}) => {
   const [selectedService, setSelectedService] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [filter, setFilter] = useState('');
+  const [allServices, setAllServices]= useState([]);
+  
+  useEffect(() => {
+    fetchAllServices();
+  }, []);
 
-  const services = [
-    'Servicio A', 'Servicio B', 'Servicio C', 'Servicio D', 'Servicio E'
-    // Agrega más servicios según sea necesario
-  ];
+  const fetchAllServices = async () => {
+    try {
+      const serviciosResponse = await axios.get('http://10.16.1.41:8082/api/v1/servicios');
+      setAllServices(serviciosResponse.data)
+     console.log(serviciosResponse.data)
+      console.log(serviciosResponse);
+      
+    } catch (error) {
+      console.error('Error fetching areas and services:', error);
+    }
+  };
 
-  const filteredServices = services.filter(service =>
-    service.toLowerCase().includes(filter.toLowerCase())
+
+
+  const filteredServices = allServices.filter(service =>
+    service.nombreServicio.toLowerCase().includes(filter.toLowerCase())
   );
 
   const handleAdd = () => {
     if (selectedService && quantity > 0) {
       onAdd(selectedService, quantity);
+      setSelectedService('')
+      setQuantity(1)
       onClose();
     } else {
       alert('Por favor, seleccione un servicio y una cantidad válida.');
@@ -43,7 +60,7 @@ const Modal = ({ isOpen, onClose, onAdd }) => {
         <div className="mb-4 overflow-y-auto max-h-48">
           {filteredServices.map(service => (
             <div
-              key={service}
+              key={service.idServicios}
               onClick={() => setSelectedService(service)}
               className={`${
                 selectedService === service
@@ -51,7 +68,7 @@ const Modal = ({ isOpen, onClose, onAdd }) => {
                   : 'hover:bg-gray-100'
               } cursor-pointer px-3 py-2 rounded-md`}
             >
-              {service}
+              {service.nombreServicio}
             </div>
           ))}
         </div>
@@ -62,7 +79,7 @@ const Modal = ({ isOpen, onClose, onAdd }) => {
     type="range"
     id="quantity"
     min="1"
-    max="100"
+    max="10"
     value={quantity}
     onChange={e => setQuantity(e.target.value)}
     className="mr-4 w-full"
@@ -94,4 +111,4 @@ const Modal = ({ isOpen, onClose, onAdd }) => {
   );
 };
 
-export default Modal;
+export default AddServiceModal;
