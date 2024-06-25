@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const CrearPacienteModal = ({ isOpen, onClose, onPatientCreated }) => {
+const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, tiposPacientes, generos }) => {
   const [formValues, setFormValues] = useState({
     cedulaIdentidad: '',
     nombre: '',
@@ -20,53 +20,14 @@ const CrearPacienteModal = ({ isOpen, onClose, onPatientCreated }) => {
     empresa: '',
   });
   const [isFormValid, setIsFormValid] = useState(false);
-  const [institutions, setInstitutions] = useState([]);
-  const [empresas, setEmpresas] = useState([]);
-  const [tiposPacientes, setTiposPaciente] = useState([]);
-  const [generos] = useState(['MASCULINO', 'FEMENINO', 'OTRO']);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      fetchInstitutions();
-      fetchEmpresas();
-      fetchTiposPaciente();
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
     const allFieldsFilled = Object.values(formValues).every(value => value.trim() !== '');
     setIsFormValid(allFieldsFilled);
   }, [formValues]);
-
-  const fetchInstitutions = async () => {
-    try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/dependencias');
-      setInstitutions(response.data);
-    } catch (error) {
-      console.error('Error fetching institutions:', error);
-    }
-  };
-
-  const fetchEmpresas = async () => {
-    try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/empresas');
-      setEmpresas(response.data);
-    } catch (error) {
-      console.error('Error fetching empresas:', error);
-    }
-  };
-
-  const fetchTiposPaciente = async () => {
-    try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/tipos-paciente');
-      setTiposPaciente(response.data);
-    } catch (error) {
-      console.error('Error fetching tiposPaciente:', error);
-    }
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -76,10 +37,9 @@ const CrearPacienteModal = ({ isOpen, onClose, onPatientCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isFormValid) {
-      setIsLoading(true);
       setError(null);
       setSuccess(false);
-
+      setIsLoading(true);
       try {
         const newPatient = {
           ...formValues,
@@ -87,18 +47,16 @@ const CrearPacienteModal = ({ isOpen, onClose, onPatientCreated }) => {
           empresa: empresas.find(empr => empr.descripcion === formValues.empresa),
           tipoPaciente: tiposPacientes.find(tps => tps.descripcion === formValues.tipoPaciente),
         };
-        const response = await axios.post('http://10.16.1.41:8082/api/v1/paciente', newPatient);
-        console.log('Nuevo Paciente Agregado:', response.data);
+        await axios.post('http://10.16.1.41:8082/api/v1/paciente', newPatient);
         setSuccess(true);
-        onPatientCreated(response.data);
+        setIsLoading(false);
+        onSave();
         setTimeout(() => {
           onClose();
           setSuccess(false);
-        }, 2000); // Cierra el modal después de 2 segundos
+        }, 2000);
       } catch (error) {
-        console.error('Error creando paciente:', error.response?.data);
-        setError('Error al crear el paciente. Por favor, intente de nuevo.');
-      } finally {
+        setError('Error creando paciente: ' + (error.response?.data?.message || error.message));
         setIsLoading(false);
       }
     }
@@ -106,13 +64,13 @@ const CrearPacienteModal = ({ isOpen, onClose, onPatientCreated }) => {
 
   if (!isOpen) return null;
 
-
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl h-4/5 overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Nuevo Paciente</h2>
         <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 gap-6">
+
+              <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label htmlFor="cedulaIdentidad" className="block text-sm font-medium text-gray-700">Cédula de Identidad</label>
                   <input
@@ -296,31 +254,22 @@ const CrearPacienteModal = ({ isOpen, onClose, onPatientCreated }) => {
                   </select>
                 </div>
               </div>
-              {error && (
-            <div className="mt-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="mt-4 p-2 bg-green-100 border border-green-400 text-green-700 rounded">
-              Paciente creado con éxito!
-            </div>
-          )}
+          
+          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
+          {success && <p className="text-green-500 text-sm mt-2">Paciente creado con éxito!</p>}
+          
           <div className="mt-6 flex justify-end">
             <button
               type="button"
               onClick={onClose}
               className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md mr-2"
-              disabled={isLoading}
             >
               Cancelar
             </button>
             <button
               type="submit"
               className={`${
-                isFormValid && !isLoading
-                  ? 'bg-indigo-600 hover:bg-indigo-700'
-                  : 'bg-gray-400 cursor-not-allowed'
+                isFormValid ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-not-allowed'
               } text-white px-4 py-2 rounded-md`}
               disabled={!isFormValid || isLoading}
             >

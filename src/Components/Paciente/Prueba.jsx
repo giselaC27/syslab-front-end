@@ -114,8 +114,8 @@ const [isLoading, setIsLoading] = useState(false);
     setFormValues({ ...formValues, [name]: value });
   };
 
-  const handlePatientCreated = (newPatient) => {
-    setPacientes([...pacientes, newPatient]);
+  const handleSavePaciente = () => {
+    fetchPacientes();
   };
 
   const handleEditPatientSubmit = async (e) => {
@@ -490,8 +490,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
   </div>
   <div className="text-center mt-4">
     <button
-      onClick={() => setIsTipoPacienteModalOpen(true)}
-      className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+      onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium"
     >
       Nuevo Paciente
     </button>
@@ -502,8 +501,13 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
 <CrearPacienteModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onPatientCreated={handlePatientCreated}
+        onSave={handleSavePaciente}
+        institutions={institutions}
+        empresas={empresas}
+        tiposPacientes={tiposPacientes}
+        generos={generos}
       />
+
 {isEditPatientModalOpen  && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl h-4/5 overflow-y-auto">
