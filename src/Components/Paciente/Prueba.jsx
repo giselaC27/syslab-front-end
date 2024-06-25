@@ -489,9 +489,14 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
   </table>
   </div>
   <div className="text-center mt-4">
-  <button onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Paciente</button>
+    <button
+      onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+    >
+      Nuevo Paciente
+    </button>
   </div>
 </div>
+
 
 <CrearPacienteModal
         isOpen={isModalOpen}
@@ -502,6 +507,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
         tiposPacientes={tiposPacientes}
         generos={generos}
       />
+
 {isEditPatientModalOpen  && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl h-4/5 overflow-y-auto">
@@ -613,36 +619,36 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                 </div>
                 <div>
                   <label htmlFor="posibleDiagnosticoEditar" className="block text-sm font-medium text-gray-700">Posible Diagnóstico</label>
-                  <textarea
-    id="posibleDiagnosticoEditar"
-    name="posibleDiagnosticoEditar"
-    value={editingPatient.posibleDiagnostico}
-    onChange={(e) => setEditingPatient({...editingPatient, posibleDiagnostico: e.target.value})}
-    rows="3"
-    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
-  ></textarea>
+                  <input
+                    type="text"
+                    id="posibleDiagnosticoEditar"
+                    name="posibleDiagnosticoEditar"
+                    value={editingPatient.posibleDiagnostico}
+                    onChange={(e) => setEditingPatient({...editingPatient, posibleDiagnostico: e.target.value})}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
                 </div>
                 <div>
                   <label htmlFor="medicacionEditar" className="block text-sm font-medium text-gray-700">Medicación</label>
-                  <textarea
-    id="medicacionEditar"
-    name="medicacionEditar"
-    value={editingPatient.medicacion}
-    onChange={(e) => setEditingPatient({...editingPatient, medicacion: e.target.value})}
-    rows="3"
-    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
-  ></textarea>
+                  <input
+                    type="text"
+                    id="medicacionEditar"
+                    name="medicacionEditar"
+                    value={editingPatient.medicacion}
+                    onChange={(e) => setEditingPatient({...editingPatient, medicacion: e.target.value})}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
                 </div>
                 <div>
                   <label htmlFor="enfermedadCatastroficaEditar" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas</label>
-                  <textarea
-    id="enfermedadCatastroficaEditar"
-    name="enfermedadCatastroficaEditar"
-    value={editingPatient.enfermedadCatastrofica}
-    onChange={(e) => setEditingPatient({...editingPatient, enfermedadCatastrofica: e.target.value})}
-    rows="3"
-    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
-  ></textarea>
+                  <input
+                    type="text"
+                    id="enfermedadCatastroficaEditar"
+                    name="enfermedadCatastroficaEditar"
+                    value={editingPatient.enfermedadCatastrofica}
+                    onChange={(e) => setEditingPatient({...editingPatient, enfermedadCatastrofica: e.target.value})}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
                 </div>
                 <div>
                   <label htmlFor="dependenciaEditar" className="block text-sm font-medium text-gray-700">Cargo/Institución</label>
