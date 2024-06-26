@@ -10,8 +10,8 @@ const Login = ({ onLogin }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     //borrar despues
-    onLogin("prueba");
-    return;
+    //onLogin("prueba");
+    //return;
 
     try {
       const response = await axios.post('http://10.16.1.41:8082/api/v1/usuario/sesion', { email, contrasena: password });
