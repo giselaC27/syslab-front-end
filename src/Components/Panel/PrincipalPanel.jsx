@@ -7,6 +7,8 @@ import Administrador from '../Usuario/Administrador';
 
 const MainPanel = ({ onLogout, username }) => {
   const [activeView, setActiveView] = useState('default');
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+
   const renderContent = () => {
     switch (activeView) {
       case 'nuevoTurno':
@@ -17,6 +19,9 @@ const MainPanel = ({ onLogout, username }) => {
         return <Turnos />;
       case 'servicios': 
         return <Servicios />;
+ 
+      case 'gestionPersonal':
+        return <Administrador />;
       case 'administrador':
         return <Administrador />;
       // Agrega más casos para otras vistas
@@ -29,7 +34,6 @@ const MainPanel = ({ onLogout, username }) => {
             </div>
           </div>
         );
-        
     }
   };
 
@@ -60,18 +64,19 @@ const MainPanel = ({ onLogout, username }) => {
           </button>
           <button onClick={() => setActiveView('pacientes')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
             Pacientes
-          </button>
-          <button onClick={() => setActiveView('servicios')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
-            Servicios
-          </button>
+          </button>        
           <button onClick={() => setActiveView('informes')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
             Informes
           </button>
-          <button onClick={() => setActiveView('descuentos')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
-            Descuentos
-          </button>
-          <button onClick={() => setActiveView('administrador')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+          <button onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium relative">
             Administrador
+            {isAdminMenuOpen && (
+              <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                <button onClick={() => { setActiveView('servicios'); setIsAdminMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Servicios</button>
+                <button onClick={() => { setActiveView('descuentos'); setIsAdminMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Descuentos</button>
+                <button onClick={() => { setActiveView('gestionPersonal'); setIsAdminMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestión de Personal</button>
+              </div>
+            )}
           </button>
         </div>
       </nav>
@@ -83,5 +88,3 @@ const MainPanel = ({ onLogout, username }) => {
 };
 
 export default MainPanel;
-
-

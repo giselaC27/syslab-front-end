@@ -86,7 +86,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
         <h2 className="text-xl font-bold mb-4">Nuevo Paciente</h2>
         <form onSubmit={handleSubmit}>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 gap-6">
                 <div>
                   <label htmlFor="cedulaIdentidad" className="block text-sm font-medium text-gray-700">Cédula de Identidad</label>
                   <input
@@ -191,7 +191,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
                   />
                 </div>
                 <div>
-                  <label htmlFor="posibleDiagnostico" className="block text-sm font-medium text-gray-700">Posible Diagnóstico Opcional</label>
+                  <label htmlFor="posibleDiagnostico" className="block text-sm font-medium text-gray-700">Posible Diagnóstico</label>
                   <textarea
       id="posibleDiagnostico"
       name="posibleDiagnostico"
@@ -202,7 +202,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
     ></textarea>
                 </div>
                 <div>
-                  <label htmlFor="medicacion" className="block text-sm font-medium text-gray-700">Medicación Opcional</label>
+                  <label htmlFor="medicacion" className="block text-sm font-medium text-gray-700">Medicación</label>
                   <textarea
       id="medicacion"
       name="medicacion"
@@ -213,7 +213,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
     ></textarea>
                 </div>
                 <div>
-                  <label htmlFor="enfermedadCatastrofica" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas Opcional</label>
+                  <label htmlFor="enfermedadCatastrofica" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas</label>
                   <textarea
       id="enfermedadCatastrofica"
       name="enfermedadCatastrofica"
@@ -224,7 +224,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
     ></textarea>
                 </div>
                 <div>
-                  <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">Dependencia</label>
+                  <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">Cargo/Institución</label>
                   <select
                     id="dependencia"
                     name="dependencia"
@@ -274,7 +274,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           {success && <p className="text-green-500 text-sm mt-2">Paciente creado con éxito!</p>}
           
-          <div className="mt-6 flex justify-center">
+          <div className="mt-6 flex justify-end">
             <button
               type="button"
               onClick={onClose}

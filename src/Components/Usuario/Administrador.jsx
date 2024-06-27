@@ -103,19 +103,10 @@ const Administrador = () => {
 
   return (
     <div className="p-8 w-full">
-      <div className="flex items-center space-x-4 mb-6">
-        <label className="block text-sm font-medium text-gray-700">Buscar</label>
-        <input
-          type="text"
-          value={search}
-          onChange={handleSearchChange}
-          className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
-        />
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
-      </div>
-
+      <h1 className="text-4xl font-bold mb-4 text-indigo-500">Gestion Personal</h1>
+     
       <button onClick={openModal} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium mb-4">Agregar Usuario</button>
-
+      <div className="max-h-96 overflow-y-auto mb-4">
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
         <thead className="bg-indigo-500 text-white">
           <tr>
@@ -138,7 +129,7 @@ const Administrador = () => {
           ))}
         </tbody>
       </table>
-
+      </div>
       {isModalOpen && (
       
       <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">

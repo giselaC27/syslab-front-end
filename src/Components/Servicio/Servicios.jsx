@@ -224,7 +224,7 @@ const Servicios = () => {
               {area.nombreArea}
             </button>
             <button onClick={() => handleEditArea(area)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Editar</button>
-            <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Eliminar</button>
+           
           </div>
           {expandedAreaId === area.idArea && (
             <div className="mt-2 ml-4">
@@ -232,7 +232,7 @@ const Servicios = () => {
                 <div key={servicio.idServicios} className="flex items-center space-x-4 mb-2">
                  <span className="flex-grow text-gray-700"> Nombre: {servicio.nombreServicio} - Precio: $ {servicio.precio} - Código:  {servicio.codigoServicio}</span>
                   <button onClick={() => handleEditService(servicio)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">Editar</button>
-                  <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Eliminar</button>
+                 
                 </div>
               ))}
             </div>

@@ -11,6 +11,7 @@ const Pacientes = () => {
   const [isTipoPacienteModalOpen, setIsTipoPacienteModalOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
 const [isEditPatientModalOpen, setIsEditPatientModalOpen] = useState(false);
+const [searchTerm, setSearchTerm] = useState('');
   const [newInstitution, setNewInstitution] = useState({
     id: '',
     descripcion: '',
@@ -107,11 +108,6 @@ const [isLoading, setIsLoading] = useState(false);
     } catch (error) {
       console.error('Error fetching tiposPaciente:', error);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
   };
 
   const handleSavePaciente = () => {
@@ -249,6 +245,15 @@ const [isLoading, setIsLoading] = useState(false);
     
   };
 
+  const filteredPacientes = pacientes.filter(paciente =>
+    Object.values(paciente).some(value => 
+      value && typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+    ) ||
+    (paciente.dependencia && paciente.dependencia.descripcion.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paciente.empresa && paciente.empresa.descripcion.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paciente.tipoPaciente && paciente.tipoPaciente.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
 //editar empresa 
 
 const handleEditEmpresaSubmit = async (e) => {
@@ -297,10 +302,13 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
       <div className="flex items-center space-x-4 mb-6">
         <label htmlFor="buscar" className="block text-sm font-medium text-gray-700">Buscar</label>
         <input
-          type="text"
-          id="buscar"
-          className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
+    type="text"
+    id="buscar"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    placeholder="Buscar pacientes..."
+  />
         <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
         <button onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Paciente</button>
       </div>
@@ -322,14 +330,14 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
               <th className="px-4 py-2">Posible Diagnóstico</th>
               <th className="px-4 py-2">Medicación</th>
               <th className="px-4 py-2">Enfermedades Catastróficas</th>
-              <th className="px-4 py-2">Cargo/Institución</th>
+              <th className="px-4 py-2">Dependencia</th>
               <th className="px-4 py-2">Tipo Paciente</th>
               <th className="px-4 py-2">Empresa</th>
               <th className="px-4 py-2">Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {pacientes.map((paciente, index) => (
+            {filteredPacientes.map((paciente, index) => (
               <tr key={index} >
                 <td className="px-4 py-2">{paciente.cedulaIdentidad}</td>
                 <td className="px-4 py-2">{paciente.nombre}</td>
@@ -352,8 +360,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
   className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md text-xs font-medium"
 >
   Editar
-</button>
-                  <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">Eliminar</button>
+</button>               
                 </td>
               </tr>
             ))}
@@ -363,7 +370,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
       </div>
 
       <div className="text-center mb-4">
-        <label className="block text-sm font-medium text-gray-700">Gestión Cargo/Institución</label>
+        <label className="block text-sm font-medium text-gray-700">Gestión Dependencias / Empresas</label>
       </div>
 
       <div className="overflow-x-auto mb-6">
@@ -373,7 +380,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
           <thead className="bg-indigo-500 text-white">
             <tr>
-              <th className="px-4 py-2">Cargo/Institución</th>
+              <th className="px-4 py-2">Dependencias</th>
               <th className="px-4 py-2">Estado</th>
               <th className="px-4 py-2">Acciones</th>
             </tr>
@@ -389,10 +396,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md text-xs font-medium"
                   >
                     Editar
-                  </button>
-                  <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">
-                    Eliminar
-                  </button>
+                  </button>                
                 </td>
               </tr>
             ))}
@@ -430,9 +434,6 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md text-xs font-medium"
                   >
                     Editar
-                  </button>
-                  <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">
-                    Eliminar
                   </button>
                 </td>
               </tr>
@@ -479,9 +480,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
             >
               Editar
             </button>
-            <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">
-              Eliminar
-            </button>
+
           </td>
         </tr>
       ))}
