@@ -14,9 +14,16 @@ const Login = ({ onLogin }) => {
     //return;
 
     try {
-      const response = await axios.post('http://10.16.1.41:8082/api/v1/usuario/sesion', { email, contrasena: password });
-      if (response.status === 200) {
-        onLogin(response.data.nombre);
+      
+      //const response = await axios.post('http://10.16.1.41:8082/api/v1/usuario/sesion', { email, contrasena: password });
+      const userData={email:email,
+        contrasena:password
+      }
+      const sucess=  await onLogin(userData);
+
+      if (sucess) {
+        console.log("exitoso")
+        
        
          
     

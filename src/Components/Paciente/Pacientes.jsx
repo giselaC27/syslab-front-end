@@ -488,7 +488,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
   </table>
   </div>
   <div className="text-center mt-4">
-  <button onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Paciente</button>
+  <button onClick={() => setIsTipoPacienteModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Tipo Paciente</button>
   </div>
 </div>
 
