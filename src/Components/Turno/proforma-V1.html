@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reporte de Turno</title>
+  <!-- Agrega los estilos de Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="p-8 w-full">
+    <h1 class="text-4xl font-bold mb-4 text-indigo-500 justify-center">PROFORMA</h1>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div>
+        <label for="ci-paciente" class="block text-sm font-medium text-gray-700">CI Paciente</label>
+        <input type="text" id="ci-paciente" value="1234567890" readonly class="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+      </div>
+
+      <div>
+        <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+        <input type="text" id="nombre" value="Juan Pérez" readonly class="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+      </div>
+
+      <div>
+        <label for="tipo-paciente" class="block text-sm font-medium text-gray-700">Tipo de Paciente</label>
+        <input type="text" id="tipo-paciente" value="Paciente Regular" readonly class="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+      </div>
+
+      <div>
+        <label for="cargo-empresa" class="block text-sm font-medium text-gray-700">Empresa</label>
+        <input type="text" id="cargo-empresa" value="Empresa A" readonly class="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+      </div>
+
+      <div>
+        <label for="dependencia" class="block text-sm font-medium text-gray-700">Dependencia</label>
+        <input type="text" id="dependencia" value="Departamento de Ventas" readonly class="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+      </div>
+    </div>
+
+    <div class="mt-6">
+      <table class="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead class="bg-indigo-500 text-white">
+          <tr>
+            <th class="px-4 py-2">Codigo</th>
+            <th class="px-4 py-2">Servicio</th>
+            <th class="px-4 py-2">Área</th>
+            <th class="px-4 py-2">Valor</th>
+            <th class="px-4 py-2">Descuento</th>
+            <th class="px-4 py-2">Cantidad</th>
+            <th class="px-4 py-2">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="px-4 py-2">001</td>
+            <td class="px-4 py-2 max-w-xs break-words">Consulta Médica</td>
+            <td class="px-4 py-2">Consulta Externa</td>
+            <td class="px-4 py-2">$50</td>
+            <td class="px-4 py-2">0</td>
+            <td class="px-4 py-2">2</td>
+            <td class="px-4 py-2">$100</td>
+          </tr>
+          <!-- Agrega más filas según sea necesario -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mt-6 flex items-center justify-end space-x-4">
+      <label for="total-a-pagar" class="block text-sm font-medium text-gray-700">Total a Pagar</label>
+      <input type="text" id="total-a-pagar" value="$100" readonly class="ml-4 block w-24 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
+
+    </div>
+  </div>
+</body>
+</html>

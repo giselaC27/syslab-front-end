@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-import NuevoTurno from '../Paciente/NuevoTurno';
+import NuevoTurno from '../Turno/NuevoTurno';
 import Pacientes from '../Paciente/Pacientes';
-import Turnos from '../Paciente/Turnos';
+import Turnos from '../Turno/Turnos';
 import Servicios from '../Servicio/Servicios';
 import Administrador from '../Usuario/Administrador';
-
+import Proforma from '../Turno/Proforma';
 const MainPanel = ({ onLogout, username }) => {
   const [activeView, setActiveView] = useState('default');
+
   const renderContent = () => {
     switch (activeView) {
+      case 'proforma':
+        return <Proforma />;
       case 'nuevoTurno':
-        return <NuevoTurno />;
+        return <NuevoTurno  />;
       case 'pacientes':
         return <Pacientes />;
       case 'turnos':
@@ -52,25 +55,30 @@ const MainPanel = ({ onLogout, username }) => {
       {/* Segundo Navbar */}
       <nav className="bg-indigo-600 text-white px-4 py-3 flex justify-center">
         <div className="space-x-4">
-          <button onClick={() => setActiveView('nuevoTurno')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+        <button onClick={() => setActiveView('proforma')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "proforma" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}
+            >
+            Proforma
+          </button>
+          <button onClick={() => setActiveView('nuevoTurno')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "nuevoTurno" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}
+            >
             Nuevo Turno
           </button>
-          <button onClick={() => setActiveView('turnos')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+          <button onClick={() => setActiveView('turnos')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "turnos" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
             Turnos
           </button>
-          <button onClick={() => setActiveView('pacientes')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+          <button onClick={() => setActiveView('pacientes')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "pacientes" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
             Pacientes
           </button>
-          <button onClick={() => setActiveView('servicios')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+          <button onClick={() => setActiveView('servicios')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "servicios" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
             Servicios
           </button>
-          <button onClick={() => setActiveView('informes')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+          <button onClick={() => setActiveView('informes')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "informes" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
             Informes
           </button>
-          <button onClick={() => setActiveView('descuentos')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+          <button onClick={() => setActiveView('descuentos')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "descuentos" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
             Descuentos
           </button>
-          <button onClick={() => setActiveView('administrador')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
+          <button onClick={() => setActiveView('administrador')}className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "administrador" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
             Administrador
           </button>
         </div>

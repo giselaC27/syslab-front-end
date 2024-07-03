@@ -8,11 +8,8 @@ const Turnos = () => {
   const [turnosPagados, setTurnosPagados] = useState(10); // Número de turnos pagados
   const [viewDetails, setViewDetails] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState(null);
-
   const [activeTab, setActiveTab] = useState("TODOS");
-
-
-
+  const [ciPacienteSearched, setCiPacienteSearched]= useState("");
 
   useEffect(() => {
     fetchTurnosByEstado("TODOS");
@@ -23,24 +20,20 @@ const Turnos = () => {
       setTurnos([]);
       let response = [];
       if (estado === "TODOS") {
-        response = await axios.get('http://10.16.1.41:8080/api/v1/turnos');
+        response = await axios.get('http://10.16.1.41:8082/api/v1/turnos');
       } else {
-        response = await axios.get('http://10.16.1.41:8080/api/v1/turnos/estado/' + estado);
+        response = await axios.get('http://10.16.1.41:8082/api/v1/turnos/estado/' + estado);
       }
 
       console.log(response.data)
       setTurnos(response.data);
       setActiveTab(estado);
-    
+
     } catch (error) {
       console.error('Error:', error);
       alert('Error:', error.response.data)
     }
   };
-
-
-
-
 
   const handleVerDetalle = (turno) => {
     setSelectedTurno(turno);
@@ -60,7 +53,7 @@ const Turnos = () => {
       return;
     }
     try {
-      const response = await axios.get('http://10.16.1.41:8080/api/v1/turno/estado/' + idTurno + "/" + state);
+      const response = await axios.get('http://10.16.1.41:8082/api/v1/turno/estado/' + idTurno + "/" + state);
       if (response.status === 200) {
 
         alert("TURNO ACTUALIZADO CON ÉXITO");
@@ -72,6 +65,45 @@ const Turnos = () => {
     }
 
   };
+
+  const getEstadoBarra = (estado) => {
+    const barra = {
+      PENDIENTE: "bg-red-500 w-1/3",
+      PAGADO: "bg-yellow-500 w-2/3",
+      RECIBIDO: "bg-green-500 w-full",
+    };
+    return barra[estado] || "bg-red-900 w-full";
+  };
+
+  const fetchTurnosByPaciente = async () => {
+    if(ciPacienteSearched===""){
+      alert("INGRESA UNA CEDULA DE IDENTIDAD PARA BUSCAR")
+      return; 
+    }
+
+    if(ciPacienteSearched.length < 10){
+      alert("INGRESA UNA CEDULA DE IDENTIDAD VÁLIDA PARA BUSCAR")
+      return; 
+    }
+
+    try {
+      setTurnos([]);
+      const response = await axios.get('http://10.16.1.41:8082/api/v1/turnos/ci/'+ciPacienteSearched);
+      setTurnos(response.data);
+      setActiveTab("TODOS");
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error:', error.response.data)
+    }
+
+  };
+
+
+
+  const handleInputChange = (event) => {
+    setCiPacienteSearched(event.target.value);
+  };
+
   return (
     <div className="p-8 w-full">
       <h1 className="text-4xl font-bold mb-4 text-indigo-500">Turnos</h1>
@@ -83,35 +115,37 @@ const Turnos = () => {
             <input
               type="text"
               id="buscar"
+              value={ciPacienteSearched}
+              onChange={handleInputChange}
               className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
-            <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
+            <button onClick={fetchTurnosByPaciente} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
           </div>
 
           <div className="flex flex-col items-center mb-6">
             <div className="flex items-center">
               <button
                 onClick={() => fetchTurnosByEstado("TODOS")}
-                className={`px-4 py-2 rounded-l-md text-sm font-medium ${activeTab === "TODOS" ? "bg-indigo-600 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                className={`px-4 py-2 rounded-l-md text-sm font-medium ${activeTab === "TODOS" ? "bg-indigo-700 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
               >
                 Todos los turnos
               </button>
               <button
-                onClick={() => fetchTurnosByEstado("REGISTRADO")}
-                className={`px-4 py-2 text-sm font-medium ${activeTab === "REGISTRADO" ? "bg-indigo-600 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                onClick={() => fetchTurnosByEstado("PENDIENTE")}
+                className={`px-4 py-2 text-sm font-medium ${activeTab === "PENDIENTE" ? "bg-indigo-600 text-white" : "bg-red-500 text-white hover:bg-red-600"}`}
               >
-                Turnos Pendientes {turnosPendientes}
+                Turnos Pendientes
               </button>
               <button
                 onClick={() => fetchTurnosByEstado("PAGADO")}
-                className={`px-4 py-2 text-sm font-medium ${activeTab === "PAGADO" ? "bg-indigo-600 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                className={`px-4 py-2 text-sm font-medium ${activeTab === "PAGADO" ? "bg-indigo-600 text-white" : "bg-yellow-500 text-white hover:bg-yellow-600"}`}
               >
-                Turnos Pagados {turnosPagados}
+                Turnos Pagados
               </button>
               <button
-    
+
                 onClick={() => fetchTurnosByEstado("RECIBIDO")}
-                className={`px-4 py-2 rounded-r-md text-sm font-medium ${activeTab === "RECIBIDO" ? "bg-indigo-600 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                className={`px-4 py-2 rounded-r-md text-sm font-medium ${activeTab === "RECIBIDO" ? "bg-indigo-600 text-white" : "bg-green-500 text-white hover:bg-green-600"}`}
               >
                 Turnos Recibidos
               </button>
@@ -154,7 +188,11 @@ const Turnos = () => {
                         <td className="px-4 py-2">{turno.paciente.cedulaIdentidad}</td>
                         <td className="px-4 py-2">{nombreCompleto}</td>
                         <td className="px-4 py-2">{turno.total}</td>
-                        <td className="px-4 py-2">{turno.estado}</td>
+                        <td className="px-4 py-2">
+                          <div className="w-full h-4 bg-gray-200 rounded">
+                            <div className={`${getEstadoBarra(turno.estado)} h-4 rounded`}></div>
+                          </div>
+                        </td>
                         <td className="px-4 py-2">
                           <button
                             className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded-md text-xs font-medium"
@@ -162,9 +200,6 @@ const Turnos = () => {
                           >
                             Ver Detalle
                           </button>
-                        </td>
-                        <td className="px-4 py-2">
-                          <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md text-xs font-medium">Editar</button>
                         </td>
                       </tr>
                     );
@@ -179,8 +214,11 @@ const Turnos = () => {
 
           <h3 className="text-xl font-bold mb-4">DETALLE</h3>
 
-          <div className="flex justify-end space-x-4 mt-6">
-            <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Eliminar Turno</button>
+          <div className="flex justify-end space-x-4 mt-6 ">
+            {(selectedTurno.estado === 'PENDIENTE' || (selectedTurno.estado === 'PAGADO')) && (
+              <button onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "CANCELADO")} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Cancelar Turno</button>
+            )}
+
           </div>
 
           <div className="grid grid-cols-3 gap-4 mb-6">
@@ -232,7 +270,7 @@ const Turnos = () => {
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-              <thead className="bg-gray-200">
+              <thead className="bg-indigo-400">
                 <tr>
                   <th className="px-4 py-2">Número</th>
                   <th className="px-4 py-2">Servicio</th>
@@ -260,10 +298,18 @@ const Turnos = () => {
           </div>
 
           <div className="flex justify-end space-x-4 mt-6">
-            {(selectedTurno.estado === 'REGISTRADO' || selectedTurno.estado === 'PAGADO') && (
+            {(selectedTurno.estado === 'PAGADO') && (
+              <button
+                onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "PENDIENTE")}
+                className="bg-red-500 hover:bg-red-200 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Marcar como Pendiente
+              </button>
+            )}
+            {(selectedTurno.estado === 'PENDIENTE' || selectedTurno.estado === 'RECIBIDO') && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "PAGADO")}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className=" bg-yellow-500 hover:bg-yellow-200 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
                 Marcar como Pagado
               </button>
@@ -271,7 +317,7 @@ const Turnos = () => {
             {(selectedTurno.estado === 'PAGADO') && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "RECIBIDO")}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className="bg-green-500 hover:bg-green-200 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
                 Recepción de Muestras
               </button>
@@ -279,7 +325,7 @@ const Turnos = () => {
 
             <button
               onClick={handleVolverAtras}
-              className="bg-red-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium mb-4"
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-md text-sm font-medium mb-4"
             >
               Atrás
             </button>
