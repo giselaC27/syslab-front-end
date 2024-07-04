@@ -9,6 +9,11 @@ const Servicios = () => {
   const [newService, setNewService] = useState({ areaId: '', codigoServicio: '', nombre: '', precio: '' });
   const [expandedAreaId, setExpandedAreaId] = useState(null);
   const [errors, setErrors] = useState({});
+  const [editingArea, setEditingArea] = useState(null);
+  const [editingService, setEditingService] = useState(null);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     fetchAreasAndServices();
@@ -40,6 +45,9 @@ const Servicios = () => {
     setNewArea('');
     setNewService({ areaId: '', codigoServicio: '', nombre: '', precio: '' });
     setErrors({});
+    setError(null);
+    setSuccess(false);
+    setIsLoading(false);
   };
 
   const handleInputChange = (e) => {
@@ -53,24 +61,40 @@ const Servicios = () => {
 
   const handleSave = async () => {
     let currentErrors = {};
-    if (modalType === 'area') {
+    setIsLoading(true);
+    setError(null);
+    setSuccess(false);
+  
+    if (modalType === 'editArea') {
+      await handleUpdateArea();
+    } else if (modalType === 'editService') {
+      await handleUpdateService();
+    } else if (modalType === 'area') {
       if (!newArea) {
         currentErrors.newArea = 'Este campo debe estar completo';
       }
-    } else {
+      if (Object.keys(currentErrors).length === 0) {
+        try {
+          await axios.post('http://10.16.1.41:8082/api/v1/area', { nombreArea: newArea });
+          await fetchAreasAndServices();
+          setSuccess(true);
+          setTimeout(() => {
+            closeModal();
+            setSuccess(false);
+          }, 2000);
+        } catch (error) {
+          console.error('Error saving new area:', error);
+          setError('Ocurrió un error al guardar el área. Por favor, inténtalo de nuevo.');
+        }
+      }
+    } else if (modalType === 'servicio') {
       if (!newService.areaId) currentErrors.areaId = 'Este campo debe estar completo';
       if (!newService.codigoServicio) currentErrors.codigoServicio = 'Este campo debe estar completo';
       if (!newService.nombre) currentErrors.nombre = 'Este campo debe estar completo';
       if (!newService.precio) currentErrors.precio = 'Este campo debe estar completo';
-    }
-    setErrors(currentErrors);
-
-    if (Object.keys(currentErrors).length === 0) {
-      try {
-        if (modalType === 'area') {
-          await axios.post('http://10.16.1.41:8082/api/v1/area', { nombreArea: newArea });
-          fetchAreasAndServices();
-        } else {
+  
+      if (Object.keys(currentErrors).length === 0) {
+        try {
           const servicioData = {
             codigoServicio: newService.codigoServicio,
             nombreServicio: newService.nombre,
@@ -78,17 +102,108 @@ const Servicios = () => {
             area: { idArea: parseInt(newService.areaId) }
           };
           await axios.post('http://10.16.1.41:8082/api/v1/servicio', servicioData);
-          fetchAreasAndServices();
+          await fetchAreasAndServices();
+          setSuccess(true);
+          setTimeout(() => {
+            closeModal();
+            setSuccess(false);
+          }, 2000);
+        } catch (error) {
+          console.error('Error saving new service:', error);
+          setError('Ocurrió un error al guardar el servicio. Por favor, inténtalo de nuevo.');
         }
-        closeModal();
-      } catch (error) {
-        console.error('Error saving data:', error);
       }
     }
+  
+    setIsLoading(false);
+    setErrors(currentErrors);
   };
 
   const toggleArea = (areaId) => {
     setExpandedAreaId(expandedAreaId === areaId ? null : areaId);
+  };
+
+  const handleEditArea = (area) => {
+    setEditingArea(area);
+    setNewArea(area.nombreArea);
+    openModal('editArea');
+  };
+  
+  const handleEditService = (service) => {
+    setEditingService(service);
+    setNewService({
+      areaId: service.area.idArea,
+      codigoServicio: service.codigoServicio,
+      nombre: service.nombreServicio,
+      precio: service.precio.toString()
+    });
+    openModal('editService');
+  };
+  
+  const handleUpdateArea = async () => {
+    setIsLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    if (!newArea) {
+      setErrors({ newArea: 'Este campo debe estar completo' });
+      setIsLoading(false);
+      return;
+    }
+    try {
+      await axios.put('http://10.16.1.41:8082/api/v1/area', {
+        idArea: editingArea.idArea,
+        nombreArea: newArea
+      });
+      await fetchAreasAndServices();
+      setSuccess(true);
+      setTimeout(() => {
+        closeModal();
+        setSuccess(false);
+      }, 2000);
+    } catch (error) {
+      console.error('Error updating area:', error);
+      setError('Ocurrió un error al actualizar el área. Por favor, inténtalo de nuevo.');
+    }
+
+    setIsLoading(false);
+  };
+  
+  const handleUpdateService = async () => {
+    setIsLoading(true);
+    setError(null);
+    setSuccess(false);
+
+    let currentErrors = {};
+    if (!newService.areaId) currentErrors.areaId = 'Este campo debe estar completo';
+    if (!newService.codigoServicio) currentErrors.codigoServicio = 'Este campo debe estar completo';
+    if (!newService.nombre) currentErrors.nombre = 'Este campo debe estar completo';
+    if (!newService.precio) currentErrors.precio = 'Este campo debe estar completo';
+    setErrors(currentErrors);
+  
+    if (Object.keys(currentErrors).length === 0) {
+      try {
+        const servicioData = {
+          idServicios: editingService.idServicios,
+          codigoServicio: newService.codigoServicio,
+          nombreServicio: newService.nombre,
+          precio: parseFloat(newService.precio),
+          area: { idArea: parseInt(newService.areaId) }
+        };
+        await axios.put('http://10.16.1.41:8082/api/v1/servicio', servicioData);
+        await fetchAreasAndServices();
+        setSuccess(true);
+        setTimeout(() => {
+          closeModal();
+          setSuccess(false);
+        }, 2000);
+      } catch (error) {
+        console.error('Error updating service:', error);
+        setError('Ocurrió un error al actualizar el servicio. Por favor, inténtalo de nuevo.');
+      }
+    }
+
+    setIsLoading(false);
   };
 
   return (
@@ -108,16 +223,16 @@ const Servicios = () => {
             >
               {area.nombreArea}
             </button>
-            <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Editar</button>
-            <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Eliminar</button>
+            <button onClick={() => handleEditArea(area)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Editar</button>
+           
           </div>
           {expandedAreaId === area.idArea && (
             <div className="mt-2 ml-4">
               {area.servicios.map(servicio => (
                 <div key={servicio.idServicios} className="flex items-center space-x-4 mb-2">
-                  <span className="flex-grow text-gray-700">{servicio.nombreServicio}</span>
-                  <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Editar</button>
-                  <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Eliminar</button>
+                 <span className="flex-grow text-gray-700"> Nombre: {servicio.nombreServicio} - Precio: $ {servicio.precio} - Código:  {servicio.codigoServicio}</span>
+                  <button onClick={() => handleEditService(servicio)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">Editar</button>
+                 
                 </div>
               ))}
             </div>
@@ -128,28 +243,24 @@ const Servicios = () => {
       {isModalOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-lg w-96">
-            {modalType === 'area' ? (
+            {(modalType === 'area' || modalType === 'editArea') ? (
               <>
-                <h3 className="text-xl font-bold mb-4">Nueva Área</h3>
+                <h3 className="text-xl font-bold mb-4">{modalType === 'area' ? 'Nueva Área' : 'Editar Área'}</h3>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">Nombre del Área</label>
                   <input
                     type="text"
                     name="newArea"
                     value={newArea}
-                    onChange={handleInputChange}
+                    onChange={(e) => setNewArea(e.target.value)}
                     className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
                   />
                   {errors.newArea && <p className="text-red-500 text-xs mt-1">{errors.newArea}</p>}
                 </div>
-                <div className="flex justify-center space-x-4">
-                  <button onClick={closeModal} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Cancelar</button>
-                  <button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Guardar</button>
-                </div>
               </>
             ) : (
               <>
-                <h3 className="text-xl font-bold mb-4">Nuevo Servicio</h3>
+                <h3 className="text-xl font-bold mb-4">{modalType === 'servicio' ? 'Nuevo Servicio' : 'Editar Servicio'}</h3>
                 <div className="mb-4">
                   <label className="block text-sm font-medium text-gray-700">Área</label>
                   <select
@@ -198,12 +309,29 @@ const Servicios = () => {
                   />
                   {errors.precio && <p className="text-red-500 text-xs mt-1">{errors.precio}</p>}
                 </div>
-                <div className="flex justify-center space-x-4">
-                  <button onClick={closeModal} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Cancelar</button>
-                  <button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Guardar</button>
-                </div>
               </>
             )}
+            
+            {isLoading && <p className="text-blue-500">Cargando...</p>}
+            {error && <p className="text-red-500">{error}</p>}
+            {success && <p className="text-green-500">Operación exitosa</p>}
+            
+            <div className="flex justify-center space-x-4">
+              <button 
+                onClick={closeModal} 
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+                disabled={isLoading}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleSave} 
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
+                disabled={isLoading}
+              >
+               {isLoading ? 'Guardando...' : 'Guardar'}
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -212,3 +340,4 @@ const Servicios = () => {
 };
 
 export default Servicios;
+

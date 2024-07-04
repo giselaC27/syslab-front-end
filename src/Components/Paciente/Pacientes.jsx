@@ -119,11 +119,6 @@ const Pacientes = () => {
     }
   };
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
-
   const handleSavePaciente = () => {
     fetchPacientes();
   };
@@ -307,10 +302,13 @@ const Pacientes = () => {
       <div className="flex items-center space-x-4 mb-6">
         <label htmlFor="buscar" className="block text-sm font-medium text-gray-700">Buscar</label>
         <input
-          type="text"
-          id="buscar"
-          className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
+    type="text"
+    id="buscar"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    placeholder="Buscar pacientes..."
+  />
         <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
         <button onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Paciente</button>
       </div>
@@ -373,7 +371,7 @@ const Pacientes = () => {
       </div>
 
       <div className="text-center mb-4">
-        <label className="block text-sm font-medium text-gray-700">Gestión Cargo/Institución</label>
+        <label className="block text-sm font-medium text-gray-700">Gestión Dependencias / Empresas</label>
       </div>
 
       <div className="overflow-x-auto mb-6">

@@ -11,6 +11,10 @@ const Pacientes = () => {
   const [isTipoPacienteModalOpen, setIsTipoPacienteModalOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState(null);
 const [isEditPatientModalOpen, setIsEditPatientModalOpen] = useState(false);
+const [searchTerm, setSearchTerm] = useState('');
+const [activeInstitutions, setActiveInstitutions] = useState([]);
+const [activeEmpresas, setActiveEmpresas] = useState([]);
+const [activeTiposPaciente, setActiveTiposPaciente] = useState([]);
   const [newInstitution, setNewInstitution] = useState({
     id: '',
     descripcion: '',
@@ -78,6 +82,7 @@ const [isLoading, setIsLoading] = useState(false);
     try {
       const response = await axios.get('http://10.16.1.41:8082/api/v1/dependencias');
       setInstitutions(response.data);
+      setActiveInstitutions(response.data.filter(inst => inst.activo));
     } catch (error) {
       console.error('Error fetching institutions:', error);
     }
@@ -92,26 +97,25 @@ const [isLoading, setIsLoading] = useState(false);
       console.error('Error fetching patients:', error);
     }
   };
+
   const fetchEmpresas = async () => {
     try {
       const response = await axios.get('http://10.16.1.41:8082/api/v1/empresas');
       setEmpresas(response.data);
+      setActiveEmpresas(response.data.filter(emp => emp.activo));
     } catch (error) {
       console.error('Error fetching empresas:', error);
     }
   };
+
   const fetchTiposPaciente = async () => {
     try {
       const response = await axios.get('http://10.16.1.41:8082/api/v1/tipos-paciente');
       setTiposPaciente(response.data);
+      setActiveTiposPaciente(response.data.filter(tp => tp.activo));
     } catch (error) {
       console.error('Error fetching tiposPaciente:', error);
     }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
   };
 
   const handleSavePaciente = () => {
@@ -249,6 +253,15 @@ const [isLoading, setIsLoading] = useState(false);
     
   };
 
+  const filteredPacientes = pacientes.filter(paciente =>
+    Object.values(paciente).some(value => 
+      value && typeof value === 'string' && value.toLowerCase().includes(searchTerm.toLowerCase())
+    ) ||
+    (paciente.dependencia && paciente.dependencia.descripcion.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paciente.empresa && paciente.empresa.descripcion.toLowerCase().includes(searchTerm.toLowerCase())) ||
+    (paciente.tipoPaciente && paciente.tipoPaciente.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
+
 //editar empresa 
 
 const handleEditEmpresaSubmit = async (e) => {
@@ -297,10 +310,13 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
       <div className="flex items-center space-x-4 mb-6">
         <label htmlFor="buscar" className="block text-sm font-medium text-gray-700">Buscar</label>
         <input
-          type="text"
-          id="buscar"
-          className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        />
+    type="text"
+    id="buscar"
+    value={searchTerm}
+    onChange={(e) => setSearchTerm(e.target.value)}
+    className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+    placeholder="Buscar pacientes..."
+  />
         <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
         <button onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Paciente</button>
       </div>
@@ -329,7 +345,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
             </tr>
           </thead>
           <tbody>
-            {pacientes.map((paciente, index) => (
+            {filteredPacientes.map((paciente, index) => (
               <tr key={index} >
                 <td className="px-4 py-2">{paciente.cedulaIdentidad}</td>
                 <td className="px-4 py-2">{paciente.nombre}</td>
@@ -352,8 +368,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
   className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md text-xs font-medium"
 >
   Editar
-</button>
-                  <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">Eliminar</button>
+</button>               
                 </td>
               </tr>
             ))}
@@ -389,10 +404,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md text-xs font-medium"
                   >
                     Editar
-                  </button>
-                  <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">
-                    Eliminar
-                  </button>
+                  </button>                
                 </td>
               </tr>
             ))}
@@ -430,9 +442,6 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="bg-yellow-500 hover:bg-yellow-600 text-white px-2 py-1 rounded-md text-xs font-medium"
                   >
                     Editar
-                  </button>
-                  <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">
-                    Eliminar
                   </button>
                 </td>
               </tr>
@@ -479,9 +488,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
             >
               Editar
             </button>
-            <button className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">
-              Eliminar
-            </button>
+
           </td>
         </tr>
       ))}
@@ -489,25 +496,19 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
   </table>
   </div>
   <div className="text-center mt-4">
-    <button
-      onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium"
-    >
-      Nuevo Paciente
-    </button>
+  <button onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Paciente</button>
   </div>
 </div>
-
 
 <CrearPacienteModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSavePaciente}
-        institutions={institutions}
-        empresas={empresas}
-        tiposPacientes={tiposPacientes}
+        institutions={activeInstitutions}
+  empresas={activeEmpresas}
+  tiposPacientes={activeTiposPaciente}
         generos={generos}
       />
-
 {isEditPatientModalOpen  && (
         <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl h-4/5 overflow-y-auto">
@@ -619,51 +620,51 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                 </div>
                 <div>
                   <label htmlFor="posibleDiagnosticoEditar" className="block text-sm font-medium text-gray-700">Posible Diagnóstico</label>
-                  <input
-                    type="text"
-                    id="posibleDiagnosticoEditar"
-                    name="posibleDiagnosticoEditar"
-                    value={editingPatient.posibleDiagnostico}
-                    onChange={(e) => setEditingPatient({...editingPatient, posibleDiagnostico: e.target.value})}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+    id="posibleDiagnosticoEditar"
+    name="posibleDiagnosticoEditar"
+    value={editingPatient.posibleDiagnostico}
+    onChange={(e) => setEditingPatient({...editingPatient, posibleDiagnostico: e.target.value})}
+    rows="3"
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+  ></textarea>
                 </div>
                 <div>
                   <label htmlFor="medicacionEditar" className="block text-sm font-medium text-gray-700">Medicación</label>
-                  <input
-                    type="text"
-                    id="medicacionEditar"
-                    name="medicacionEditar"
-                    value={editingPatient.medicacion}
-                    onChange={(e) => setEditingPatient({...editingPatient, medicacion: e.target.value})}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+    id="medicacionEditar"
+    name="medicacionEditar"
+    value={editingPatient.medicacion}
+    onChange={(e) => setEditingPatient({...editingPatient, medicacion: e.target.value})}
+    rows="3"
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+  ></textarea>
                 </div>
                 <div>
                   <label htmlFor="enfermedadCatastroficaEditar" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas</label>
-                  <input
-                    type="text"
-                    id="enfermedadCatastroficaEditar"
-                    name="enfermedadCatastroficaEditar"
-                    value={editingPatient.enfermedadCatastrofica}
-                    onChange={(e) => setEditingPatient({...editingPatient, enfermedadCatastrofica: e.target.value})}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  />
+                  <textarea
+    id="enfermedadCatastroficaEditar"
+    name="enfermedadCatastroficaEditar"
+    value={editingPatient.enfermedadCatastrofica}
+    onChange={(e) => setEditingPatient({...editingPatient, enfermedadCatastrofica: e.target.value})}
+    rows="3"
+    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+  ></textarea>
                 </div>
                 <div>
                   <label htmlFor="dependenciaEditar" className="block text-sm font-medium text-gray-700">Cargo/Institución</label>
                   <select
-                    id="dependenciaEditar"
-                    name="dependenciaEditar"
-                    value={editingPatient.dependencia}
-                    onChange={(e) => setEditingPatient({...editingPatient, dependencia: e.target.value})}
-                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
-                  >
-                    <option value="">Seleccionar</option>
-                    {institutions.map((inst, index) => (
-                      <option key={index} value={inst.descripcion}>{inst.descripcion}</option>
-                    ))}
-                  </select>
+  id="dependenciaEditar"
+  name="dependenciaEditar"
+  value={editingPatient.dependencia}
+  onChange={(e) => setEditingPatient({...editingPatient, dependencia: e.target.value})}
+  className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+>
+  <option value="">Seleccionar</option>
+  {activeInstitutions.map((inst, index) => (
+    <option key={index} value={inst.descripcion}>{inst.descripcion}</option>
+  ))}
+</select>
                 </div>
                 <div>
                   <label htmlFor="empresaEditar" className="block text-sm font-medium text-gray-700">Empresa</label>
@@ -675,7 +676,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {empresas.map((empr, index) => (
+                    {activeEmpresas.map((empr, index) => (
                       <option key={index} value={empr.descripcion}>{empr.descripcion}</option>
                     ))}
                   </select>
@@ -691,7 +692,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {tiposPacientes.map((tps, index) => (
+                    {activeTiposPaciente.map((tps, index) => (
                       <option key={index} value={tps.descripcion}>{tps.descripcion}</option>
                     ))}
                   </select>
