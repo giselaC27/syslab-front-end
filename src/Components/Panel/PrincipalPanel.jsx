@@ -1,6 +1,4 @@
 import React, { useState, useContext } from 'react';
-import NuevoTurno from '../Paciente/NuevoTurno';
-import React, { useState } from 'react';
 import NuevoTurno from '../Turno/NuevoTurno';
 import Pacientes from '../Paciente/Pacientes';
 import Turnos from '../Turno/Turnos';
@@ -8,10 +6,9 @@ import Servicios from '../Servicio/Servicios';
 import Administrador from '../Usuario/Administrador';
 import { AuthContext } from '../AuthContext';
 import ConfiguracionModal from '../Usuario/ConfiguracionModal';
-
-const MainPanel = ({ onLogout}) => {
 import Proforma from '../Turno/Proforma';
-const MainPanel = ({ onLogout, username }) => {
+
+const MainPanel = ({ onLogout }) => {
   const [activeView, setActiveView] = useState('default');
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const authContext = useContext(AuthContext);
@@ -24,14 +21,13 @@ const MainPanel = ({ onLogout, username }) => {
       case 'proforma':
         return <Proforma />;
       case 'nuevoTurno':
-        return <NuevoTurno  />;
+        return <NuevoTurno />;
       case 'pacientes':
         return <Pacientes />;
       case 'turnos':
         return <Turnos />;
-      case 'servicios': 
+      case 'servicios':
         return <Servicios />;
- 
       case 'gestionPersonal':
         return <Administrador />;
 
@@ -55,12 +51,12 @@ const MainPanel = ({ onLogout, username }) => {
         <p className="text-lg font-semibold">Bienvenido {user && user.nombre}</p>
 
         <div className="space-x-4">
-        <button 
-  onClick={() => setIsConfigModalOpen(true)} 
-  className="bg-indigo-700 hover:bg-indigo-800 px-3 py-2 rounded text-sm font-medium"
->
-  Configuración
-</button>
+          <button
+            onClick={() => setIsConfigModalOpen(true)}
+            className="bg-indigo-700 hover:bg-indigo-800 px-3 py-2 rounded text-sm font-medium"
+          >
+            Configuración
+          </button>
           <button onClick={onLogout} className="bg-red-500 hover:bg-red-600 px-3 py-2 rounded text-sm font-medium">
             Cerrar Sesión
           </button>
@@ -70,12 +66,12 @@ const MainPanel = ({ onLogout, username }) => {
       {/* Segundo Navbar */}
       <nav className="bg-indigo-600 text-white px-4 py-3 flex justify-center">
         <div className="space-x-4">
-        <button onClick={() => setActiveView('proforma')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "proforma" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}
-            >
+          <button onClick={() => setActiveView('proforma')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "proforma" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}
+          >
             Proforma
           </button>
           <button onClick={() => setActiveView('nuevoTurno')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "nuevoTurno" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}
-            >
+          >
             Nuevo Turno
           </button>
           <button onClick={() => setActiveView('turnos')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "turnos" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
@@ -84,19 +80,12 @@ const MainPanel = ({ onLogout, username }) => {
           <button onClick={() => setActiveView('pacientes')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "pacientes" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
             Pacientes
           </button>
-          <button onClick={() => setActiveView('servicios')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "servicios" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
-            Servicios
-          </button>
+        
           <button onClick={() => setActiveView('informes')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "informes" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
-          </button>        
-          <button onClick={() => setActiveView('informes')} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium">
             Informes
           </button>
-          <button onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium relative">
-          <button onClick={() => setActiveView('descuentos')} className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "descuentos" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
-            Descuentos
-          </button>
-          <button onClick={() => setActiveView('administrador')}className={`hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium ${activeView === "administrador" ? "bg-indigo-900 text-white" : "bg-indigo-600"}`}>
+          
+          <button onClick={() => {setIsAdminMenuOpen(!isAdminMenuOpen); setActiveView("administrador")}} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium relative">
             Administrador
             {isAdminMenuOpen && (
               <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
@@ -111,10 +100,10 @@ const MainPanel = ({ onLogout, username }) => {
 
       {/* Contenido principal */}
       {renderContent()}
-      <ConfiguracionModal 
-  isOpen={isConfigModalOpen} 
-  onClose={() => setIsConfigModalOpen(false)} 
-/>
+      <ConfiguracionModal
+        isOpen={isConfigModalOpen}
+        onClose={() => setIsConfigModalOpen(false)}
+      />
     </div>
   );
 };
