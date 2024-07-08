@@ -187,7 +187,7 @@ const NuevoTurno = () => {
     }
 
     try {
-      await axios.post('http://10.16.1.41:8080/api/v1/turno', turno);
+      await axios.post('http://10.16.1.41:8082/api/v1/turno', turno);
       alert('TURNO GENERADO CORRECTAMENTE');
       clearState();
     } catch (error) {
@@ -282,7 +282,7 @@ const NuevoTurno = () => {
     }
 
     try {
-      const response = await axios.post('http://10.16.1.41:8080/api/v1/turno/impresion', proforma, {
+      const response = await axios.post('http://10.16.1.41:8082/api/v1/turno/impresion', proforma, {
         responseType: 'blob' // Indicar a Axios que esperamos un blob en la respuesta
       });
   

@@ -27,6 +27,10 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const filteredInstitution=institutions.filter(institution =>institution.activo)
+  const filteredEmpresas=empresas.filter(empresa =>empresa.activo)
+  const filteredTipoPacientes=tiposPacientes.filter(tipoPaciente =>tipoPaciente.activo)
+
   useEffect(() => {
     if (paciente) {
       setFormValues({
@@ -276,6 +280,191 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
             </div>
           </div>
 
+              <div className="grid grid-cols-2 gap-6">
+                <div>
+                  <label htmlFor="cedulaIdentidad" className="block text-sm font-medium text-gray-700">Cédula de Identidad</label>
+                  <input
+                    type="text"
+                    id="cedulaIdentidad"
+                    name="cedulaIdentidad"
+                    value={formValues.cedulaIdentidad}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="nombre" className="block text-sm font-medium text-gray-700">Nombre</label>
+                  <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value={formValues.nombre}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="primerApellido" className="block text-sm font-medium text-gray-700">Primer Apellido</label>
+                  <input
+                    type="text"
+                    id="primerApellido"
+                    name="primerApellido"
+                    value={formValues.primerApellido}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="segundoApellido" className="block text-sm font-medium text-gray-700">Segundo Apellido</label>
+                  <input
+                    type="text"
+                    id="segundoApellido"
+                    name="segundoApellido"
+                    value={formValues.segundoApellido}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="direccion" className="block text-sm font-medium text-gray-700">Dirección</label>
+                  <input
+                    type="text"
+                    id="direccion"
+                    name="direccion"
+                    value={formValues.direccion}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="numeroTelefono" className="block text-sm font-medium text-gray-700">Número de Teléfono</label>
+                  <input
+                    type="text"
+                    id="numeroTelefono"
+                    name="numeroTelefono"
+                    value={formValues.numeroTelefono}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="fechaNacimiento" className="block text-sm font-medium text-gray-700">Fecha de Nacimiento</label>
+                  <input
+                    type="date"
+                    id="fechaNacimiento"
+                    name="fechaNacimiento"
+                    value={formValues.fechaNacimiento}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="genero" className="block text-sm font-medium text-gray-700">Género</label>
+                  <select
+                    id="genero"
+                    name="genero"
+                    value={formValues.genero}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  >
+                    <option value="">Seleccionar</option>
+                    {generos.map((genero, index) => (
+                      <option key={index} value={genero}>{genero}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formValues.email}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="posibleDiagnostico" className="block text-sm font-medium text-gray-700">Posible Diagnóstico Opcional</label>
+                  <textarea
+      id="posibleDiagnostico"
+      name="posibleDiagnostico"
+      value={formValues.posibleDiagnostico}
+      onChange={handleChange}
+      rows="3"
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+    ></textarea>
+                </div>
+                <div>
+                  <label htmlFor="medicacion" className="block text-sm font-medium text-gray-700">Medicación Opcional</label>
+                  <textarea
+      id="medicacion"
+      name="medicacion"
+      value={formValues.medicacion}
+      onChange={handleChange}
+      rows="3"
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+    ></textarea>
+                </div>
+                <div>
+                  <label htmlFor="enfermedadCatastrofica" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas Opcional</label>
+                  <textarea
+      id="enfermedadCatastrofica"
+      name="enfermedadCatastrofica"
+      value={formValues.enfermedadCatastrofica}
+      onChange={handleChange}
+      rows="3"
+      className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none resize-none"
+    ></textarea>
+                </div>
+                <div>
+                  <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">Dependencia</label>
+                  <select
+                    id="dependencia"
+                    name="dependencia"
+                    value={formValues.dependencia}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  >
+                    <option value="">Seleccionar</option>
+                    {filteredInstitution.map((inst, index) => (
+                      <option key={index} value={inst.descripcion}>{inst.descripcion}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="empresa" className="block text-sm font-medium text-gray-700">Empresa</label>
+                  <select
+                    id="empresa"
+                    name="empresa"
+                    value={formValues.empresa}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  >
+                    <option value="">Seleccionar</option>
+                    {filteredEmpresas.map((empr, index) => (
+                      <option key={index} value={empr.descripcion}>{empr.descripcion}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  
+                  <label htmlFor="tipoPaciente" className="block text-sm font-medium text-gray-700">Tipo Paciente</label>
+                  <select
+                    id="tipoPaciente"
+                    name="tipoPaciente"
+                    value={formValues.tipoPaciente}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
+                  >
+                    <option value="">Seleccionar</option>
+                    {filteredTipoPacientes.map((tps, index) => (
+                      <option key={index} value={tps.descripcion}>{tps.descripcion}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+          
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           {success && <p className="text-green-500 text-sm mt-2">Paciente creado con éxito!</p>}
 

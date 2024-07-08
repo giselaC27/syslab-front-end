@@ -61,6 +61,9 @@ const [searchTerm, setSearchTerm] = useState('');
   const [error, setError] = useState(null);
 const [success, setSuccess] = useState(false);
 const [isLoading, setIsLoading] = useState(false);
+const filteredInstitution=institutions.filter(institution =>institution.activo)
+  const filteredEmpresas=empresas.filter(empresa =>empresa.activo)
+  const filteredTipoPacientes=tiposPacientes.filter(tipoPaciente =>tipoPaciente.activo)
 
 
   useEffect(() => {
@@ -309,7 +312,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
     className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
     placeholder="Buscar pacientes..."
   />
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
+        
         <button onClick={() => setIsModalOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Nuevo Paciente</button>
       </div>
 
@@ -653,7 +656,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {institutions.map((inst, index) => (
+                    {filteredInstitution.map((inst, index) => (
                       <option key={index} value={inst.descripcion}>{inst.descripcion}</option>
                     ))}
                   </select>
@@ -668,7 +671,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {empresas.map((empr, index) => (
+                    {filteredEmpresas.map((empr, index) => (
                       <option key={index} value={empr.descripcion}>{empr.descripcion}</option>
                     ))}
                   </select>
@@ -684,7 +687,7 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {tiposPacientes.map((tps, index) => (
+                    {filteredTipoPacientes.map((tps, index) => (
                       <option key={index} value={tps.descripcion}>{tps.descripcion}</option>
                     ))}
                   </select>

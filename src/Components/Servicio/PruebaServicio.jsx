@@ -316,21 +316,19 @@ const Servicios = () => {
                   />
                   {errors.precio && <p className="text-red-500 text-xs mt-1">{errors.precio}</p>}
                 </div>
-                {modalType === 'editService' && (
-      <div className="mb-4">
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            name="estaActivo"
-            checked={newService.estaActivo}
-            onChange={handleInputChange}
-            className="form-checkbox h-5 w-5 text-indigo-600"
-          />
-          <span className="ml-2 text-sm text-gray-700">Activo</span>
-        </label>
-      </div>
-    )}
-  </>
+                <div className="mb-4">
+                  <label className="flex items-center">
+                    <input
+                      type="checkbox"
+                      name="estaActivo"
+                      checked={newService.estaActivo}
+                      onChange={handleInputChange}
+                      className="form-checkbox h-5 w-5 text-indigo-600"
+                    />
+                    <span className="ml-2 text-sm text-gray-700">Activo</span>
+                  </label>
+                </div>
+              </>
             )}
             
             {isLoading && <p className="text-blue-500">Cargando...</p>}

@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
-
+import { AuthContext } from '../AuthContext';
 
 const Turnos = () => {
-
   const [turnos, setTurnos] = useState([]);
   const [viewDetails, setViewDetails] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState(null);
   const [activeTab, setActiveTab] = useState("TODOS");
   const [ciPacienteSearched, setCiPacienteSearched] = useState("");
+  const [selectedPrinter, setSelectedPrinter] = useState("NINGUNA");
 
+  const authContext = useContext(AuthContext);
+  const { user } = authContext;
 
   useEffect(() => {
     fetchTurnosByEstado("TODOS");
@@ -20,18 +22,15 @@ const Turnos = () => {
       setTurnos([]);
       let response = [];
       if (estado === "TODOS") {
-        response = await axios.get('http://10.16.1.41:8080/api/v1/turnos');
+        response = await axios.get('http://10.16.1.41:8082/api/v1/turnos');
       } else {
-        response = await axios.get('http://10.16.1.41:8082/api/v1/turnos/estado/' + estado);
+        response = await axios.get(`http://10.16.1.41:8082/api/v1/turnos/estado/${estado}`);
       }
-
-      console.log(response.data)
       setTurnos(response.data);
       setActiveTab(estado);
-
     } catch (error) {
       console.error('Error:', error);
-      alert('Error:', error.response.data)
+      alert('Error:', error.response.data);
     }
   };
 
@@ -44,20 +43,18 @@ const Turnos = () => {
     setViewDetails(false);
     setSelectedTurno(null);
     fetchTurnosByEstado("TODOS");
-    setSelectedPrinter("NINGUNA")
+    setSelectedPrinter("NINGUNA");
   };
 
   const handleChangeStateTurno = async (idTurno, state) => {
-    const confirm = window.confirm("Estás seguro de cambiar el estado como: " + state);
+    const confirm = window.confirm(`Estás seguro de cambiar el estado como: ${state}`);
     if (!confirm) {
-      alert("NO SE CAMBIADO EL ESTADO DEL TURNO");
+      alert("NO SE HA CAMBIADO EL ESTADO DEL TURNO");
       return;
     }
 
-
     try {
-      //peticion para cambiar el estado de un turno, solo cuando se cambia a estado recibido, se enviar la impresora con datos
-      const response = await axios.get('http://10.16.1.41:8080/api/v1/turno/estado/' + idTurno + "/" + state);
+      const response = await axios.get(`http://10.16.1.41:8082/api/v1/turno/estado/${idTurno}/${state}`);
       if (response.status === 200) {
         alert("TURNO ACTUALIZADO CON ÉXITO");
         handleVolverAtras();
@@ -79,41 +76,35 @@ const Turnos = () => {
 
   const fetchTurnosByPaciente = async () => {
     if (ciPacienteSearched === "") {
-      alert("INGRESA UNA CEDULA DE IDENTIDAD PARA BUSCAR")
+      alert("INGRESA UNA CÉDULA DE IDENTIDAD PARA BUSCAR");
       return;
     }
 
     if (ciPacienteSearched.length < 10) {
-      alert("INGRESA UNA CEDULA DE IDENTIDAD VÁLIDA PARA BUSCAR")
+      alert("INGRESA UNA CÉDULA DE IDENTIDAD VÁLIDA PARA BUSCAR");
       return;
     }
 
     try {
       setTurnos([]);
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/turnos/ci/' + ciPacienteSearched);
+      const response = await axios.get(`http://10.16.1.41:8082/api/v1/turnos/ci/${ciPacienteSearched}`);
       setTurnos(response.data);
       setActiveTab("TODOS");
     } catch (error) {
       console.error('Error:', error);
-      alert('Error:', error.response.data)
+      alert('Error:', error.response.data);
     }
-
   };
-
-
 
   const handleInputChange = (event) => {
     setCiPacienteSearched(event.target.value);
   };
 
-  const handleChoosePrinter = (printer) => {
-    setPrinterSelected(printer);
-  }
-
   return (
     <div className="p-8 w-full">
       <h1 className="text-4xl font-bold mb-4 text-indigo-500">Turnos</h1>
 
+     
 
       {!viewDetails ? (
         <>
@@ -133,9 +124,9 @@ const Turnos = () => {
             <div className="flex items-center">
               <button
                 onClick={() => fetchTurnosByEstado("TODOS")}
-                className={`px-4 py-2 rounded-l-md text-sm font-medium ${activeTab === "TODOS" ? "bg-blue-900 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                className={`px-4 py-2 rounded-l-md text-sm font-medium ${activeTab === "TODOS" ? "bg-indigo-700 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
               >
-                Todos los turnos 
+                Todos los turnos
               </button>
               <button
                 onClick={() => fetchTurnosByEstado("PENDIENTE")}
@@ -145,13 +136,37 @@ const Turnos = () => {
               </button>
               <button
                 onClick={() => fetchTurnosByEstado("PAGADO")}
-                className={`px-4 py-2 rounded-r-md text-sm font-medium ${activeTab === "PAGADO" ? "bg-indigo-600 text-white" : "bg-yellow-500 text-white hover:bg-yellow-600"}`}
+                className={`px-4 py-2 text-sm font-medium ${activeTab === "PAGADO" ? "bg-indigo-600 text-white" : "bg-yellow-500 text-white hover:bg-yellow-600"}`}
               >
                 Turnos Pagados
               </button>
-             
+              <button
+                onClick={() => fetchTurnosByEstado("RECIBIDO")}
+                className={`px-4 py-2 rounded-r-md text-sm font-medium ${activeTab === "RECIBIDO" ? "bg-indigo-600 text-white" : "bg-green-500 text-white hover:bg-green-600"}`}
+              >
+                Turnos Recibidos
+              </button>
             </div>
+            
           </div>
+          <div className="flex justify-center space-x-2 p-4">
+      <div className="flex items-center">
+        <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+        <span className="ml-2">PENDIENTE</span>
+      </div>
+      <div className="flex items-center">
+        <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+        <span className="ml-2">PAGADO</span>
+      </div>
+      <div className="flex items-center">
+        <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+        <span className="ml-2">RECIBIDO</span>
+      </div>
+      <div className="flex items-center">
+        <div className="w-4 h-4 bg-red-900 rounded-full"></div>
+        <span className="ml-2">CANCELADO</span>
+      </div>
+    </div>
 
           <div className="overflow-x-auto mb-6">
             <div className="max-h-80 overflow-y-auto">
@@ -202,6 +217,8 @@ const Turnos = () => {
                             Ver Detalle
                           </button>
                         </td>
+
+                       
                       </tr>
                     );
                   })}
@@ -212,14 +229,17 @@ const Turnos = () => {
         </>
       ) : (
         <div id="details-windows" className="mt-8">
-
           <h3 className="text-xl font-bold mb-4">DETALLE</h3>
 
-          <div className="flex justify-end space-x-4 mt-6 ">
-            {(selectedTurno.estado === 'PENDIENTE' || (selectedTurno.estado === 'PAGADO')) && (
-              <button onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "CANCELADO")} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium">Cancelar Turno</button>
+          <div className="flex justify-end space-x-4 mt-6">
+            {(user && user.rol === 'secretario' && selectedTurno.estado=== "PENDIENTE" && selectedTurno.estado!=="CANCELADO") && (
+              <button
+                onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "CANCELADO")}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
+              >
+                Cancelar Turno
+              </button>
             )}
-
           </div>
 
           <div className="grid grid-cols-3 gap-4 mb-6">
@@ -268,8 +288,8 @@ const Turnos = () => {
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
             </div>
-
           </div>
+
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead className="bg-indigo-400">
@@ -300,7 +320,7 @@ const Turnos = () => {
           </div>
 
           <div className="flex justify-end space-x-4 mt-6">
-            {(selectedTurno.estado === 'PAGADO') && (
+            {(user && user.rol === 'financiero' && selectedTurno.estado==="PAGADO") && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "PENDIENTE")}
                 className="bg-red-500 hover:bg-red-200 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -308,15 +328,15 @@ const Turnos = () => {
                 Marcar como Pendiente
               </button>
             )}
-            {(selectedTurno.estado === 'PENDIENTE') && (
+            {(user && user.rol === 'financiero'&& selectedTurno.estado==="PENDIENTE") && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "PAGADO")}
-                className=" bg-yellow-500 hover:bg-yellow-200 text-white px-4 py-2 rounded-md text-sm font-medium"
+                className="bg-yellow-500 hover:bg-yellow-200 text-white px-4 py-2 rounded-md text-sm font-medium"
               >
                 Marcar como Pagado
               </button>
             )}
-            {(selectedTurno.estado === 'PAGADO') && (
+            {(user && user.rol === 'secretario' && selectedTurno.estado === ("PAGADO") && selectedTurno.estado!=="RECIBIDO") && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "RECIBIDO")}
                 className="bg-green-500 hover:bg-green-200 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -334,8 +354,8 @@ const Turnos = () => {
           </div>
         </div>
       )}
-
     </div>
   );
 };
+
 export default Turnos;
