@@ -25,6 +25,10 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
   const [success, setSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
+  const filteredInstitution=institutions.filter(institution =>institution.activo)
+  const filteredEmpresas=empresas.filter(empresa =>empresa.activo)
+  const filteredTipoPacientes=tiposPacientes.filter(tipoPaciente =>tipoPaciente.activo)
+
   useEffect(() => {
     const requiredFields = [
         'cedulaIdentidad',
@@ -233,7 +237,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {institutions.map((inst, index) => (
+                    {filteredInstitution.map((inst, index) => (
                       <option key={index} value={inst.descripcion}>{inst.descripcion}</option>
                     ))}
                   </select>
@@ -248,7 +252,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {empresas.map((empr, index) => (
+                    {filteredEmpresas.map((empr, index) => (
                       <option key={index} value={empr.descripcion}>{empr.descripcion}</option>
                     ))}
                   </select>
@@ -264,7 +268,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
                     className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none"
                   >
                     <option value="">Seleccionar</option>
-                    {tiposPacientes.map((tps, index) => (
+                    {filteredTipoPacientes.map((tps, index) => (
                       <option key={index} value={tps.descripcion}>{tps.descripcion}</option>
                     ))}
                   </select>

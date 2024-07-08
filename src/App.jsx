@@ -4,7 +4,7 @@ import viteLogo from '/vite.svg'
 import './App.css';
 import Cookies from 'js-cookie';
 
-import Login from '/src/Components/Login/login';
+import Login from '/src/Components/Login/Login';
 import Panel from './Components/Panel/PrincipalPanel';
 import { AuthContext } from './Components/AuthContext';
 const App = () => {

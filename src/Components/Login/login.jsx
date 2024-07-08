@@ -6,6 +6,7 @@ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showModal, setShowModal] = useState(false);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -17,7 +18,7 @@ const Login = ({ onLogin }) => {
       
       //const response = await axios.post('http://10.16.1.41:8082/api/v1/usuario/sesion', { email, contrasena: password });
       const userData={email:email,
-        contrasena:password
+        contrasena:password,        
       }
       const sucess=  await onLogin(userData);
 
