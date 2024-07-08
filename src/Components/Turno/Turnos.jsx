@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 const Turnos = () => {
 
   const [turnos, setTurnos] = useState([]);
-  const [turnosPendientes, setTurnosPendientes] = useState(5); // Número de turnos pendientes
-  const [turnosPagados, setTurnosPagados] = useState(10); // Número de turnos pagados
   const [viewDetails, setViewDetails] = useState(false);
   const [selectedTurno, setSelectedTurno] = useState(null);
   const [activeTab, setActiveTab] = useState("TODOS");
-  const [ciPacienteSearched, setCiPacienteSearched]= useState("");
+  const [ciPacienteSearched, setCiPacienteSearched] = useState("");
+
 
   useEffect(() => {
     fetchTurnosByEstado("TODOS");
@@ -20,7 +20,7 @@ const Turnos = () => {
       setTurnos([]);
       let response = [];
       if (estado === "TODOS") {
-        response = await axios.get('http://10.16.1.41:8082/api/v1/turnos');
+        response = await axios.get('http://10.16.1.41:8080/api/v1/turnos');
       } else {
         response = await axios.get('http://10.16.1.41:8082/api/v1/turnos/estado/' + estado);
       }
@@ -44,6 +44,7 @@ const Turnos = () => {
     setViewDetails(false);
     setSelectedTurno(null);
     fetchTurnosByEstado("TODOS");
+    setSelectedPrinter("NINGUNA")
   };
 
   const handleChangeStateTurno = async (idTurno, state) => {
@@ -52,18 +53,19 @@ const Turnos = () => {
       alert("NO SE CAMBIADO EL ESTADO DEL TURNO");
       return;
     }
-    try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/turno/estado/' + idTurno + "/" + state);
-      if (response.status === 200) {
 
+
+    try {
+      //peticion para cambiar el estado de un turno, solo cuando se cambia a estado recibido, se enviar la impresora con datos
+      const response = await axios.get('http://10.16.1.41:8080/api/v1/turno/estado/' + idTurno + "/" + state);
+      if (response.status === 200) {
         alert("TURNO ACTUALIZADO CON ÉXITO");
         handleVolverAtras();
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error:', error.response.data)
+      alert('Error:', error.response.data);
     }
-
   };
 
   const getEstadoBarra = (estado) => {
@@ -76,19 +78,19 @@ const Turnos = () => {
   };
 
   const fetchTurnosByPaciente = async () => {
-    if(ciPacienteSearched===""){
+    if (ciPacienteSearched === "") {
       alert("INGRESA UNA CEDULA DE IDENTIDAD PARA BUSCAR")
-      return; 
+      return;
     }
 
-    if(ciPacienteSearched.length < 10){
+    if (ciPacienteSearched.length < 10) {
       alert("INGRESA UNA CEDULA DE IDENTIDAD VÁLIDA PARA BUSCAR")
-      return; 
+      return;
     }
 
     try {
       setTurnos([]);
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/turnos/ci/'+ciPacienteSearched);
+      const response = await axios.get('http://10.16.1.41:8082/api/v1/turnos/ci/' + ciPacienteSearched);
       setTurnos(response.data);
       setActiveTab("TODOS");
     } catch (error) {
@@ -104,9 +106,14 @@ const Turnos = () => {
     setCiPacienteSearched(event.target.value);
   };
 
+  const handleChoosePrinter = (printer) => {
+    setPrinterSelected(printer);
+  }
+
   return (
     <div className="p-8 w-full">
       <h1 className="text-4xl font-bold mb-4 text-indigo-500">Turnos</h1>
+
 
       {!viewDetails ? (
         <>
@@ -126,9 +133,9 @@ const Turnos = () => {
             <div className="flex items-center">
               <button
                 onClick={() => fetchTurnosByEstado("TODOS")}
-                className={`px-4 py-2 rounded-l-md text-sm font-medium ${activeTab === "TODOS" ? "bg-indigo-700 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
+                className={`px-4 py-2 rounded-l-md text-sm font-medium ${activeTab === "TODOS" ? "bg-blue-900 text-white" : "bg-blue-500 text-white hover:bg-blue-600"}`}
               >
-                Todos los turnos
+                Todos los turnos 
               </button>
               <button
                 onClick={() => fetchTurnosByEstado("PENDIENTE")}
@@ -138,17 +145,11 @@ const Turnos = () => {
               </button>
               <button
                 onClick={() => fetchTurnosByEstado("PAGADO")}
-                className={`px-4 py-2 text-sm font-medium ${activeTab === "PAGADO" ? "bg-indigo-600 text-white" : "bg-yellow-500 text-white hover:bg-yellow-600"}`}
+                className={`px-4 py-2 rounded-r-md text-sm font-medium ${activeTab === "PAGADO" ? "bg-indigo-600 text-white" : "bg-yellow-500 text-white hover:bg-yellow-600"}`}
               >
                 Turnos Pagados
               </button>
-              <button
-
-                onClick={() => fetchTurnosByEstado("RECIBIDO")}
-                className={`px-4 py-2 rounded-r-md text-sm font-medium ${activeTab === "RECIBIDO" ? "bg-indigo-600 text-white" : "bg-green-500 text-white hover:bg-green-600"}`}
-              >
-                Turnos Recibidos
-              </button>
+             
             </div>
           </div>
 
@@ -183,7 +184,7 @@ const Turnos = () => {
 
                     return (
                       <tr key={turno.idTurno} className="bg-white border-b border-gray-200">
-                        <td className="px-4 py-2">{turno.idTurno}</td>
+                        <td className="px-4 py-2">{turno.numTurno}</td>
                         <td className="px-4 py-2">{fecha}</td>
                         <td className="px-4 py-2">{turno.paciente.cedulaIdentidad}</td>
                         <td className="px-4 py-2">{nombreCompleto}</td>
@@ -267,6 +268,7 @@ const Turnos = () => {
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
             </div>
+
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -306,7 +308,7 @@ const Turnos = () => {
                 Marcar como Pendiente
               </button>
             )}
-            {(selectedTurno.estado === 'PENDIENTE' || selectedTurno.estado === 'RECIBIDO') && (
+            {(selectedTurno.estado === 'PENDIENTE') && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "PAGADO")}
                 className=" bg-yellow-500 hover:bg-yellow-200 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -330,10 +332,9 @@ const Turnos = () => {
               Atrás
             </button>
           </div>
-
-
         </div>
       )}
+
     </div>
   );
 };

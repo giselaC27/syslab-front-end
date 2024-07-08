@@ -7,6 +7,7 @@ import Administrador from '../Usuario/Administrador';
 import { AuthContext } from '../AuthContext';
 import ConfiguracionModal from '../Usuario/ConfiguracionModal';
 import Proforma from '../Turno/Proforma';
+import axios from 'axios';
 
 const MainPanel = ({ onLogout }) => {
   const [activeView, setActiveView] = useState('default');
@@ -14,7 +15,32 @@ const MainPanel = ({ onLogout }) => {
   const authContext = useContext(AuthContext);
   const { user } = authContext;
   const [isConfigModalOpen, setIsConfigModalOpen] = useState(false);
-  console.log()
+
+   const resetNumTurnos=async ()=>{
+    try {
+      const confirmResetNumTurnos= window.confirm('¿ESTÁS TOTALMENTE SEGURO DE RESTABLECER EL NÚMERO DE TURNOS?. ESTE PROCESO ES IRREVERSIBLE');
+      if(!confirmResetNumTurnos){
+        alert("ESTABLECIMIENTO CANCELADO")
+        return;
+      }
+
+      const confirm2ResetNumTurnos= window.confirm('¿ESTÁS TOTALMENTE SEGURO DE LA DECISIÓN?.');
+      if(!confirm2ResetNumTurnos){
+        alert("ESTABLECIMIENTO CANCELADO")
+        return;
+      }
+
+      await axios.get('http://10.16.1.41:8082/api/v1/turno/reinicio');
+
+      alert("ESTABLECIMIENTO EXITOSO")
+
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error:', error.response.data)
+    }
+
+
+   }
 
   const renderContent = () => {
     switch (activeView) {
@@ -85,13 +111,14 @@ const MainPanel = ({ onLogout }) => {
             Informes
           </button>
           
-          <button onClick={() => {setIsAdminMenuOpen(!isAdminMenuOpen); setActiveView("administrador")}} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium relative">
+          <button onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)} className="hover:bg-indigo-700 px-3 py-2 rounded text-sm font-medium relative">
             Administrador
             {isAdminMenuOpen && (
               <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
                 <button onClick={() => { setActiveView('servicios'); setIsAdminMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Servicios</button>
                 <button onClick={() => { setActiveView('descuentos'); setIsAdminMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Descuentos</button>
                 <button onClick={() => { setActiveView('gestionPersonal'); setIsAdminMenuOpen(false); }} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Gestión de Personal</button>
+                <button  onClick={resetNumTurnos} className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-red-100">Reiniciar número de Turnos</button>
               </div>
             )}
           </button>

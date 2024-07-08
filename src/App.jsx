@@ -23,7 +23,7 @@ const App = () => {
         <Panel onLogout={handleLogout} user={user} />
       ) : (
         //<Login onLogin={handleLogin} />
-        <Panel onLogout={handleLogout} username={username} />
+        <Panel onLogout={handleLogout}/>
       )}
     </div>
   );

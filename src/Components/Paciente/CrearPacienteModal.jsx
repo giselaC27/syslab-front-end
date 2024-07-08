@@ -61,7 +61,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
           empresa: empresas.find(empr => empr.descripcion === formValues.empresa),
           tipoPaciente: tiposPacientes.find(tps => tps.descripcion === formValues.tipoPaciente),
           idPaciente: paciente ? paciente.idPaciente : 0,
-          estaRegistrado:  true ,
+          estaRegistrado: true,
         };
         await axios.post('http://10.16.1.41:8082/api/v1/paciente', newPatient);
         setSuccess(true);
@@ -73,7 +73,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
           setSuccess(false);
         }, 2000);
 
-        if(actualizaInfoTurno){
+        if (actualizaInfoTurno) {
           actualizaInfoTurno(newPatient.cedulaIdentidad)
         }
       } catch (error) {
@@ -90,7 +90,8 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-3xl h-4/5 overflow-y-auto">
         <h2 className="text-xl font-bold mb-4">Nuevo Paciente</h2>
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 gap-6">
+
+          <div className="grid grid-cols-2 gap-6">
             <div>
               <label htmlFor="cedulaIdentidad" className="block text-sm font-medium text-gray-700">Cédula de Identidad</label>
               <input
@@ -195,7 +196,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
               />
             </div>
             <div>
-              <label htmlFor="posibleDiagnostico" className="block text-sm font-medium text-gray-700">Posible Diagnóstico</label>
+              <label htmlFor="posibleDiagnostico" className="block text-sm font-medium text-gray-700">Posible Diagnóstico Opcional</label>
               <textarea
                 id="posibleDiagnostico"
                 name="posibleDiagnostico"
@@ -206,7 +207,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
               ></textarea>
             </div>
             <div>
-              <label htmlFor="medicacion" className="block text-sm font-medium text-gray-700">Medicación</label>
+              <label htmlFor="medicacion" className="block text-sm font-medium text-gray-700">Medicación Opcional</label>
               <textarea
                 id="medicacion"
                 name="medicacion"
@@ -217,7 +218,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
               ></textarea>
             </div>
             <div>
-              <label htmlFor="enfermedadCatastrofica" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas</label>
+              <label htmlFor="enfermedadCatastrofica" className="block text-sm font-medium text-gray-700">Enfermedades Catastróficas Opcional</label>
               <textarea
                 id="enfermedadCatastrofica"
                 name="enfermedadCatastrofica"
@@ -228,7 +229,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
               ></textarea>
             </div>
             <div>
-              <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">Cargo/Institución</label>
+              <label htmlFor="dependencia" className="block text-sm font-medium text-gray-700">Dependencia</label>
               <select
                 id="dependencia"
                 name="dependencia"
@@ -258,6 +259,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
               </select>
             </div>
             <div>
+
               <label htmlFor="tipoPaciente" className="block text-sm font-medium text-gray-700">Tipo Paciente</label>
               <select
                 id="tipoPaciente"
@@ -277,7 +279,7 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
           {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           {success && <p className="text-green-500 text-sm mt-2">Paciente creado con éxito!</p>}
 
-          <div className="mt-6 flex justify-end">
+          <div className="mt-6 flex justify-center">
             <button
               type="button"
               onClick={onClose}
@@ -287,9 +289,8 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
             </button>
             <button
               type="submit"
-              className={`${
-                isFormValid ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-not-allowed'
-              } text-white px-4 py-2 rounded-md`}
+              className={`${isFormValid ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-400 cursor-not-allowed'
+                } text-white px-4 py-2 rounded-md`}
               disabled={!isFormValid || isLoading}
             >
               {isLoading ? 'Guardando...' : 'Guardar'}

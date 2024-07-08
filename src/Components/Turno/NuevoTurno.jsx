@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import AddServiceModal from '../Paciente/AddServiceModal';
+import AddServiceModal from './AddServiceModal';
 import axios from 'axios';
 import CrearPacienteModal from '../Paciente/CrearPacienteModal';
 
