@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { endPoint } from '../EndPoint';
 
 const AddServiceModal = ({ isOpen, onClose, onAdd}) => {
   const [selectedService, setSelectedService] = useState('');
@@ -13,7 +14,7 @@ const AddServiceModal = ({ isOpen, onClose, onAdd}) => {
 
   const fetchAllServices = async () => {
     try {
-      const serviciosResponse = await axios.get('http://10.16.1.41:8082/api/v1/servicios');
+      const serviciosResponse = await axios.get(endPoint + '/api/v1/servicios');
       const serviciosActivos=serviciosResponse.data.filter(elemento => elemento.estaActivo)
       setAllServices(serviciosActivos)
      console.log(serviciosResponse.data)

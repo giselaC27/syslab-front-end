@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { endPoint } from '../EndPoint';
 
 const Administrador = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [newUser, setNewUser] = useState({ nombre: '', email: '', contrasena: '', rol: '', activo: true });
+  const [newUser, setNewUser] = useState({ nombre: '', cedulaIdentidad: '', contrasena: '', rol: '', activo: true });
   const [editUser, setEditUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [errors, setErrors] = useState({});
@@ -18,7 +19,7 @@ const Administrador = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/usuarios');
+      const response = await axios.get(endPoint + '/api/v1/usuarios');
       if (response.status === 200) {
         setUsers(response.data);
       }
@@ -39,7 +40,7 @@ const Administrador = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setIsEditModalOpen(false);
-    setNewUser({ nombre: '', email: '', contrasena: '', rol: '', activo: true });
+    setNewUser({ nombre: '', cedulaIdentidad: '', contrasena: '', rol: '', activo: true });
     setEditUser(null);
     setErrors({});
   };
@@ -56,7 +57,7 @@ const Administrador = () => {
   const handleSave = async () => {
     let currentErrors = {};
     if (!newUser.nombre) currentErrors.nombre = 'Este campo debe estar completo';
-    if (!newUser.email) currentErrors.email = 'Este campo debe estar completo';
+    if (!newUser.cedulaIdentidad) currentErrors.cedulaIdentidad = 'Este campo debe estar completo';
     if (!newUser.contrasena) currentErrors.contrasena = 'Este campo debe estar completo';
     if (!newUser.rol) currentErrors.rol = 'Debe seleccionar un rol';
 
@@ -64,7 +65,7 @@ const Administrador = () => {
 
     if (Object.keys(currentErrors).length === 0) {
       try {
-        const response = await axios.post('http://10.16.1.41:8082/api/v1/usuario', newUser);
+        const response = await axios.post(endPoint + '/api/v1/usuario', newUser);
         if (response.status === 200) {
           fetchUsers();
           closeModal();
@@ -78,7 +79,7 @@ const Administrador = () => {
   const handleUpdate = async () => {
     let currentErrors = {};
     if (!editUser.nombre) currentErrors.nombre = 'Este campo debe estar completo';
-    if (!editUser.email) currentErrors.email = 'Este campo debe estar completo';
+    if (!editUser.cedulaIdentidad) currentErrors.cedulaIdentidad = 'Este campo debe estar completo';
     if (!editUser.rol) currentErrors.rol = 'Debe seleccionar un rol';
 
     setErrors(currentErrors);
@@ -86,7 +87,7 @@ const Administrador = () => {
     if (Object.keys(currentErrors).length === 0) {
       try {
         console.log(editUser)
-        const response = await axios.put('http://10.16.1.41:8082/api/v1/usuario', editUser);
+        const response = await axios.put(endPoint + '/api/v1/usuario', editUser);
         if (response.status === 200) {
           fetchUsers();
           closeModal();
@@ -126,7 +127,7 @@ const Administrador = () => {
           <thead className="bg-indigo-500 text-white">
             <tr>
               <th className="py-2 px-4 border-b">Nombres</th>
-              <th className="py-2 px-4 border-b">Email</th>
+              <th className="py-2 px-4 border-b">Cédula Identidad</th>
               <th className="py-2 px-4 border-b">Rol</th>
               <th className="py-2 px-4 border-b">Estado</th>
               <th className="py-2 px-4 border-b">Acciones</th>
@@ -136,7 +137,7 @@ const Administrador = () => {
             {filteredUsers.map((user, index) => (
               <tr key={index}>
                 <td className="py-2 px-4 border-b">{user.nombre}</td>
-                <td className="py-2 px-4 border-b">{user.email}</td>
+                <td className="py-2 px-4 border-b">{user.cedulaIdentidad}</td>
                 <td className="py-2 px-4 border-b">{user.rol}</td>
                 <td className="py-2 px-4 border-b">{user.activo ? 'Activo' : 'Inactivo'}</td>
                 <td className="py-2 px-4 border-b">
@@ -164,15 +165,15 @@ const Administrador = () => {
               {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="block text-sm font-medium text-gray-700">Cédula de Identidad</label>
               <input
-                type="email"
-                name="email"
-                value={newUser.email}
+                type="text"
+                name="cedulaIdentidad"
+                value={newUser.cedulaIdentidad}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              {errors.cedulaIdentidad && <p className="text-red-500 text-xs mt-1">{errors.cedulaIdentidad}</p>}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Contraseña</label>
@@ -224,15 +225,15 @@ const Administrador = () => {
               {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-medium text-gray-700">Email</label>
+              <label className="block text-sm font-medium text-gray-700">Cédula Identidad</label>
               <input
-                type="email"
-                name="email"
-                value={editUser.email}
+                type="text"
+                name="cedulaIdentidad"
+                value={editUser.cedulaIdentidad}
                 onChange={handleInputChange}
                 className="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
-              {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+              {errors.cedulaIdentidad && <p className="text-red-500 text-xs mt-1">{errors.cedulaIdentidad}</p>}
             </div>
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Contraseña</label>

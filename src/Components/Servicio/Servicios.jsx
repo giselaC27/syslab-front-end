@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { endPoint } from '../EndPoint';
 
 const Servicios = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -21,8 +22,8 @@ const Servicios = () => {
 
   const fetchAreasAndServices = async () => {
     try {
-      const areasResponse = await axios.get('http://10.16.1.41:8082/api/v1/areas');
-      const serviciosResponse = await axios.get('http://10.16.1.41:8082/api/v1/servicios');
+      const areasResponse = await axios.get(endPoint + '/api/v1/areas');
+      const serviciosResponse = await axios.get(endPoint + '/api/v1/servicios');
       
       const areasWithServices = areasResponse.data.map(area => ({
         ...area,
@@ -78,7 +79,7 @@ const Servicios = () => {
       }
       if (Object.keys(currentErrors).length === 0) {
         try {
-          await axios.post('http://10.16.1.41:8082/api/v1/area', { nombreArea: newArea });
+          await axios.post(endPoint + '/api/v1/area', { nombreArea: newArea });
           await fetchAreasAndServices();
           setSuccess(true);
           setTimeout(() => {
@@ -105,7 +106,7 @@ const Servicios = () => {
             estaActivo: newService.estaActivo,
             area: { idArea: parseInt(newService.areaId) }
           };
-          await axios.post('http://10.16.1.41:8082/api/v1/servicio', servicioData);
+          await axios.post(endPoint + '/api/v1/servicio', servicioData);
           await fetchAreasAndServices();
           setSuccess(true);
           setTimeout(() => {
@@ -156,7 +157,7 @@ const Servicios = () => {
       return;
     }
     try {
-      await axios.put('http://10.16.1.41:8082/api/v1/area', {
+      await axios.put(endPoint + '/api/v1/area', {
         idArea: editingArea.idArea,
         nombreArea: newArea
       });
@@ -196,7 +197,7 @@ const Servicios = () => {
           estaActivo: newService.estaActivo,
           area: { idArea: parseInt(newService.areaId) }
         };
-        await axios.put('http://10.16.1.41:8082/api/v1/servicio', servicioData);
+        await axios.put(endPoint + '/api/v1/servicio', servicioData);
         await fetchAreasAndServices();
         setSuccess(true);
         setTimeout(() => {

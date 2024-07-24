@@ -17,7 +17,7 @@ const Login = ({ onLogin }) => {
     try {
       
       //const response = await axios.post('http://10.16.1.41:8082/api/v1/usuario/sesion', { email, contrasena: password });
-      const userData={email:email,
+      const userData={cedulaIdentidad:email,
         contrasena:password,        
       }
       const sucess=  await onLogin(userData);
@@ -48,9 +48,9 @@ const Login = ({ onLogin }) => {
         <h2 className="text-2xl font-bold mb-6 text-center">Iniciar Sesión</h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Correo Electrónico</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Cédula de Identidad</label>
             <input 
-              type="email" 
+              type="text" 
               id="email" 
               name="email" 
               required 
@@ -79,7 +79,7 @@ const Login = ({ onLogin }) => {
           </button>
         </form>
         <div className="mt-6 text-center">
-          <a href="#" className="block text-sm font-medium text-indigo-600 hover:text-indigo-500">¿Olvidaste tu contraseña?</a>
+          
         </div>
       </div>
 

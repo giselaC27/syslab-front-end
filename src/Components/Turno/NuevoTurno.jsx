@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AddServiceModal from './AddServiceModal';
 import axios from 'axios';
 import CrearPacienteModal from '../Paciente/CrearPacienteModal';
-
+import { endPoint } from '../EndPoint';
 const NuevoTurno = () => {
   const [isModaladdServiceOpen, setIsModaladdServiceOpen] = useState(false);
   const [ciPaciente, setCiPaciente] = useState('');
@@ -23,7 +23,7 @@ const NuevoTurno = () => {
   // metodos para obtener datos para un nuevo paciente
   const fetchInstitutions = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/dependencias');
+      const response = await axios.get(endPoint + '/api/v1/dependencias');
       setInstitutions(response.data);
     } catch (error) {
       console.error('Error fetching institutions:', error);
@@ -37,7 +37,7 @@ const NuevoTurno = () => {
 
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/empresas');
+      const response = await axios.get(endPoint + '/api/v1/empresas');
       setEmpresas(response.data);
     } catch (error) {
       console.error('Error fetching empresas:', error);
@@ -46,7 +46,7 @@ const NuevoTurno = () => {
 
   const fetchTiposPaciente = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/tipos-paciente');
+      const response = await axios.get(endPoint + '/api/v1/tipos-paciente');
       setTiposPaciente(response.data);
     } catch (error) {
       console.error('Error fetching tiposPaciente:', error);
@@ -120,7 +120,7 @@ const NuevoTurno = () => {
 
   const getPacienteForTurno = async (ci) => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/paciente/ci/' + ci.toString());
+      const response = await axios.get(endPoint + '/api/v1/paciente/ci/' + ci.toString());
       if (response.status === 200) {
         // si el servidor responde correctamente se verifica que el resultado no sea vacio
         if (response.data == "") {
@@ -137,7 +137,7 @@ const NuevoTurno = () => {
 
   const getProformaByPaciente = async (ci) => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/proforma/ci/' + ci.toString());
+      const response = await axios.get(endPoint + '/api/v1/proforma/ci/' + ci.toString());
       if (response.status === 200) {
         // si el servidor responde correctamente se verifica que el resultado no sea vacio
         if (response.data == "") {
@@ -187,7 +187,7 @@ const NuevoTurno = () => {
     }
 
     try {
-      await axios.post('http://10.16.1.41:8082/api/v1/turno', turno);
+      await axios.post(endPoint + '/api/v1/turno', turno);
       alert('TURNO GENERADO CORRECTAMENTE');
       clearState();
     } catch (error) {
@@ -282,7 +282,7 @@ const NuevoTurno = () => {
     }
 
     try {
-      const response = await axios.post('http://10.16.1.41:8082/api/v1/turno/impresion', proforma, {
+      const response = await axios.post(endPoint + '/api/v1/turno/impresion', proforma, {
         responseType: 'blob' // Indicar a Axios que esperamos un blob en la respuesta
       });
   

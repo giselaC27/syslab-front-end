@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CrearPacienteModal from './CrearPacienteModal';
+import { endPoint } from '../EndPoint';
+
 const Pacientes = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isInstitutionModalOpen, setIsInstitutionModalOpen] = useState(false);
@@ -80,7 +82,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
 
   const fetchInstitutions = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/dependencias');
+      const response = await axios.get(endPoint + '/api/v1/dependencias');
       setInstitutions(response.data);
     } catch (error) {
       console.error('Error fetching institutions:', error);
@@ -89,7 +91,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
 
   const fetchPacientes = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/pacientes');
+      const response = await axios.get( endPoint + '/api/v1/pacientes');
       setPacientes(response.data);
       
     } catch (error) {
@@ -98,7 +100,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
   };
   const fetchEmpresas = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/empresas');
+      const response = await axios.get(endPoint + '/api/v1/empresas');
       setEmpresas(response.data);
     } catch (error) {
       console.error('Error fetching empresas:', error);
@@ -106,7 +108,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
   };
   const fetchTiposPaciente = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/tipos-paciente');
+      const response = await axios.get(endPoint + '/api/v1/tipos-paciente');
       setTiposPaciente(response.data);
     } catch (error) {
       console.error('Error fetching tiposPaciente:', error);
@@ -131,7 +133,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
     };
   
     try {
-      await axios.put('http://10.16.1.41:8082/api/v1/paciente', patientToUpdate);
+      await axios.put(endPoint + '/api/v1/paciente', patientToUpdate);
       setSuccess(true);
       fetchPacientes();
       setTimeout(() => {
@@ -163,7 +165,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
     
     if (newInstitution.descripcion.trim() !== '' && newInstitution.codigoDependencia.trim() !== '') {
       try {
-        await axios.post('http://10.16.1.41:8082/api/v1/dependencia', newInstitution);
+        await axios.post(endPoint + '/api/v1/dependencia', newInstitution);
         setSuccess(true);
         setNewInstitution({ id: '', descripcion: '', codigoDependencia: '', activo: true });
         fetchInstitutions();
@@ -191,7 +193,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
     e.preventDefault();
     if (newEmpresa.descripcion.trim() !== '' && newEmpresa.codigoEmpresa.trim() !== '') {
       try {
-        await axios.post('http://10.16.1.41:8082/api/v1/empresa', newEmpresa);
+        await axios.post(endPoint + '/api/v1/empresa', newEmpresa);
         setSuccess(true);
         setNewEmpresa({ id: '', descripcion: '', codigoEmpresa: '', activo: true });
         fetchEmpresas();
@@ -212,7 +214,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
     e.preventDefault();
     if (newTipoPaciente.descripcion.trim() !== '' && newTipoPaciente.codigoTipoPaciente.trim() !== '') {
       try {
-        await axios.post('http://10.16.1.41:8082/api/v1/tipo-paciente', newTipoPaciente);
+        await axios.post(endPoint + '/api/v1/tipo-paciente', newTipoPaciente);
         setSuccess(true);
         setNewTipoPaciente({ id: '', descripcion: '', codigoTipoPaciente: '', activo: true });
         fetchTiposPaciente();
@@ -232,7 +234,7 @@ const filteredInstitution=institutions.filter(institution =>institution.activo)
     e.preventDefault();
     if (editInstitution.descripcion.trim() !== '') {
       try {
-        await axios.put('http://10.16.1.41:8082/api/v1/dependencia', editInstitution);
+        await axios.put(endPoint + '/api/v1/dependencia', editInstitution);
         console.log('Institución Editada:', editInstitution);
         setIsEditInstitutionModalOpen(false);
         fetchInstitutions(); // Actualizar la lista de instituciones después de editar una
@@ -263,7 +265,7 @@ const handleEditEmpresaSubmit = async (e) => {
   e.preventDefault();
   if (editEmpresa.descripcion.trim() !== '') {
     try {
-      await axios.put('http://10.16.1.41:8082/api/v1/empresa', editEmpresa);
+      await axios.put(endPoint + '/api/v1/empresa', editEmpresa);
       console.log('Empresa editada:', editEmpresa);
       setIsEditEmpresaModalOpen(false);
       fetchEmpresas(); // Actualizar la lista de instituciones después de editar una
@@ -283,7 +285,7 @@ const handleEditTipoPacienteSubmit = async (e) => {
   e.preventDefault();
   if (editTipoPaciente.descripcion.trim() !== '') {
     try {
-      await axios.put('http://10.16.1.41:8082/api/v1/tipo-paciente', editTipoPaciente);
+      await axios.put(endPoint + '/api/v1/tipo-paciente', editTipoPaciente);
       console.log('Tipo paciente:', editTipoPaciente);
       setIsEditTipoPacienteModalOpen(false);
       fetchTiposPaciente(); // Actualizar la lista de instituciones después de editar una
@@ -334,8 +336,8 @@ const openEditTipoPacienteModal = (tipoPaciente) => {
               <th className="px-4 py-2">Medicación</th>
               <th className="px-4 py-2">Enfermedades Catastróficas</th>
               <th className="px-4 py-2">Dependencia</th>
-              <th className="px-4 py-2">Tipo Paciente</th>
               <th className="px-4 py-2">Empresa</th>
+              <th className="px-4 py-2">Tipo Paciente</th>
               <th className="px-4 py-2">Acciones</th>
             </tr>
           </thead>

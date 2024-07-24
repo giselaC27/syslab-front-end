@@ -3,6 +3,7 @@ import FilterBar from './FilterBar';
 import StatsCards from './StatsCard';
 import TurnosTable from './TurnosTable';
 import axios from 'axios';
+import { endPoint } from '../EndPoint';
 
 const Dashboard = () => {
   const [turnos, setTurnos] = useState([]);
@@ -26,7 +27,7 @@ const Dashboard = () => {
 
   const fetchTurnos = async () => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/informe/turnos');
+      const response = await axios.get(endPoint + '/api/v1/informe/turnos');
       console.log('API response:', response.data);
       if (response.data && Array.isArray(response.data)) {
         setTurnos(response.data);

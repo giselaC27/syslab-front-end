@@ -22,8 +22,8 @@ const App = () => {
       {isLoggedIn ? (
         <Panel onLogout={handleLogout} user={user} />
       ) : (
-        //<Login onLogin={handleLogin} />
-        <Panel onLogout={handleLogout}/>
+        <Login onLogin={handleLogin} />
+
       )}
     </div>
   );

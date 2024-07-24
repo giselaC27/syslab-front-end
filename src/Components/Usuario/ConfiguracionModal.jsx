@@ -2,11 +2,12 @@ import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../AuthContext';
 import Cookies from 'js-cookie';
+import { endPoint } from '../EndPoint';
 
 const ConfiguracionModal = ({ isOpen, onClose }) => {
   const { user, setUser } = useContext(AuthContext);
   const [nombre, setNombre] = useState(user?.nombre || '');
-  const [email, setEmail] = useState(user?.email || '');
+  const [cedulaIdentidad, setCedulaIdentidad] = useState(user?.cedulaIdentidad || '');
   const [contrasena, setContrasena] = useState('');
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
@@ -19,16 +20,16 @@ const ConfiguracionModal = ({ isOpen, onClose }) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.put('http://10.16.1.41:8082/api/v1/usuario', {
+      const response = await axios.put(endPoint + '/api/v1/usuario', {
         idUsuario: user.idUsuario,
         nombre,
-        email,
+        cedulaIdentidad,
         contrasena: contrasena || user.contrasena,
         activo: user.activo
       });
 
       if (response.status === 200) {
-        const updatedUser = { ...user, nombre, email };
+        const updatedUser = { ...user, nombre, cedulaIdentidad };
         if (contrasena) {
           updatedUser.contrasena = contrasena;
         }
@@ -60,26 +61,20 @@ const ConfiguracionModal = ({ isOpen, onClose }) => {
         <h2 className="text-2xl font-bold mb-4">Configuración de Usuario</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">
-              Nombre
-            </label>
             <input
-              type="text"
+              type="hidden"
               id="nombre"
               value={nombre}
               onChange={(e) => setNombre(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
+          <div className="mb-4">  
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="hidden"
+              id="cedulaIdentidad"
+              value={cedulaIdentidad}
+              onChange={(e) => setCedulaIdentidad(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             />
           </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from '../AuthContext';
+import { endPoint } from '../EndPoint';
 
 const Turnos = () => {
   const [turnos, setTurnos] = useState([]);
@@ -22,9 +23,9 @@ const Turnos = () => {
       setTurnos([]);
       let response = [];
       if (estado === "TODOS") {
-        response = await axios.get('http://10.16.1.41:8082/api/v1/turnos');
+        response = await axios.get(endPoint + '/api/v1/turnos');
       } else {
-        response = await axios.get(`http://10.16.1.41:8082/api/v1/turnos/estado/${estado}`);
+        response = await axios.get(endPoint + `/api/v1/turnos/estado/${estado}`);
       }
       setTurnos(response.data);
       setActiveTab(estado);
@@ -54,7 +55,7 @@ const Turnos = () => {
     }
 
     try {
-      const response = await axios.get(`http://10.16.1.41:8082/api/v1/turno/estado/${idTurno}/${state}`);
+      const response = await axios.get(endPoint + `/api/v1/turno/estado/${idTurno}/${state}`);
       if (response.status === 200) {
         alert("TURNO ACTUALIZADO CON ÉXITO");
         handleVolverAtras();
@@ -87,7 +88,7 @@ const Turnos = () => {
 
     try {
       setTurnos([]);
-      const response = await axios.get(`http://10.16.1.41:8082/api/v1/turnos/ci/${ciPacienteSearched}`);
+      const response = await axios.get(endPoint + `/api/v1/turnos/ci/${ciPacienteSearched}`);
       setTurnos(response.data);
       setActiveTab("TODOS");
     } catch (error) {

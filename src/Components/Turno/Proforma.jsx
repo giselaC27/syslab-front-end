@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import AddServiceModal from './AddServiceModal';
 import axios from 'axios';
-
+import { endPoint } from '../EndPoint';
 
 const Proforma = () => {
   const [isModaladdServiceOpen, setIsModaladdServiceOpen] = useState(false);
@@ -63,7 +63,7 @@ const Proforma = () => {
 
   const getPacienteForTurno = async (ci) => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/paciente/ci/' + ci.toString());
+      const response = await axios.get(endPoint + '/api/v1/paciente/ci/' + ci.toString());
       if (response.status === 200) {
         // si el servidor responde correctamente se verifica que el resultado no sea vacio
         if (response.data == "") {
@@ -80,7 +80,7 @@ const Proforma = () => {
 
   const getProformaByPaciente = async (ci) => {
     try {
-      const response = await axios.get('http://10.16.1.41:8082/api/v1/proforma/ci/' + ci.toString());
+      const response = await axios.get(endPoint + '/api/v1/proforma/ci/' + ci.toString());
       if (response.status === 200) {
         // si el servidor responde correctamente se verifica que el resultado no sea vacio
         if (response.data == "") {
@@ -121,7 +121,7 @@ const Proforma = () => {
     }
 
     try {
-      await axios.post('http://10.16.1.41:8080/api/v1/proforma', proforma);
+      await axios.post(endPoint + '/api/v1/proforma', proforma);
       alert('PROFORMA CREADA CORRECTAMENTE PODRAS RECUPERARLA CON LA CEDULA DEL PACIENTE');
       clearState();
     } catch (error) {
@@ -195,7 +195,7 @@ const Proforma = () => {
     }
 
     try {
-      const response = await axios.post('http://10.16.1.41:8080/api/v1/turno/impresion', proforma, {
+      const response = await axios.post(endPoint + '/api/v1/turno/impresion', proforma, {
         responseType: 'blob' // Indicar a Axios que esperamos un blob en la respuesta
       });
   
