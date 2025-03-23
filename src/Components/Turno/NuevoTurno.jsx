@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { AuthContext } from '../AuthContext';
 import AddServiceModal from './AddServiceModal';
 import axios from 'axios';
 import CrearPacienteModal from '../Paciente/CrearPacienteModal';
@@ -13,6 +14,10 @@ const NuevoTurno = () => {
   const [totalCost, setTotalCost] = useState(0);
   const [idTurno, setIdTurno] = useState(0);
   const [generos, setGeneros] = useState(['MASCULINO', 'FEMENINO', 'OTRO']);
+  const { user, setUser } = useContext(AuthContext);
+  const [descuento, setDescuento] = useState(0);
+  const [enableDescuentos, setEnableDescuentos] = useState(false);
+
 
 
   // listas para la info de paciente:
@@ -30,8 +35,20 @@ const NuevoTurno = () => {
     }
   };
 
-  const handleSavePaciente = () => {
-
+  const handleSavePaciente = async () => {
+    let paciente = await getPacienteForTurno(ciPaciente);
+    // si el paciente no existe se pregunta si se desea registrar
+    if (!paciente) {
+      setPacienteTurno(null);
+      const register = window.confirm('El paciente con: ' + ciPaciente + ' no está registrado. Revisa la información nuevamente o ¿Deseas registrar al paciente?');
+      if (register) {
+        setExistPaciente(null);
+        handleAddNewPaciente();
+      }
+      return;
+    }
+    // si el paciente esta registrado se asigna para el turno
+    setPacienteTurno(paciente);
   };
 
 
@@ -61,9 +78,7 @@ const NuevoTurno = () => {
 
   };
 
-
-
-  // Función para limpiar el estado
+  // Función para limpiar los parámetros de la pantalla
   const clearState = () => {
     setCiPaciente('');
     setPacienteTurno(null);
@@ -71,27 +86,34 @@ const NuevoTurno = () => {
     setServiciosTurno([]);
     setTotalCost(0);
     setIdTurno(0);
+    setDescuento(0);
+    setEnableDescuentos(false);
   };
 
 
 
+  // método para añadir un servicio desde el modal addServiceModal
   const handleAddService = (service, quantity) => {
     quantity = parseInt(quantity);
 
     setServiciosTurno(prevServiciosTurno => {
+
       const existingServiceIndex = prevServiciosTurno.findIndex(item => item.servicio.idServicios === service.idServicios);
+
+      const roundToTwoDecimals = (number) => parseFloat(number.toFixed(2));
 
       if (existingServiceIndex !== -1) {
         const updatedServiciosTurno = [...prevServiciosTurno];
         updatedServiciosTurno[existingServiceIndex].cantidad = quantity; // Actualiza solo la cantidad
-        updatedServiciosTurno[existingServiceIndex].total = service.precio * quantity; // Recalcula el total
+        updatedServiciosTurno[existingServiceIndex].total = roundToTwoDecimals((service.precio * quantity)); // Recalcula el total
+
         handleCalculateTotalCost(updatedServiciosTurno); // Recalcula el total general
         return updatedServiciosTurno;
       } else {
         const newServicioTurno = {
           cantidad: quantity,
           servicio: service,
-          total: service.precio * quantity
+          total: roundToTwoDecimals((service.precio * quantity)),
         };
         const updatedServiciosTurno = [...prevServiciosTurno, newServicioTurno];
         handleCalculateTotalCost(updatedServiciosTurno); // Recalcula el total general
@@ -108,13 +130,31 @@ const NuevoTurno = () => {
     });
   };
 
+
+
   // Función para recalcular el costo total de todos los servicios
   const handleCalculateTotalCost = (serviciosTurno) => {
     let totalCostLocal = 0;
     for (let servicioTurno of serviciosTurno) {
       totalCostLocal += servicioTurno.total;
     }
-    setTotalCost(totalCostLocal);
+    if (descuento > 0) {
+      let TotalCostLocalWithDescuento = totalCostLocal * (1 - (descuento / 100));
+      setTotalCost(TotalCostLocalWithDescuento);
+    } else {
+      setTotalCost(totalCostLocal);
+    }
+
+  };
+
+  // Función para recalcular el costo total de todos los servicios agregado el descuento
+  const handleCalculateTotalCostWithDescuento = (descuento) => {
+    let totalCostLocal = 0;
+    for (let servicioTurno of serviciosTurno) {
+      totalCostLocal += servicioTurno.total;
+    }
+    let TotalCostLocalWithDescuento = totalCostLocal * (1 - (descuento / 100));
+    setTotalCost(TotalCostLocalWithDescuento);
   };
 
 
@@ -177,7 +217,11 @@ const NuevoTurno = () => {
       paciente: { cedulaIdentidad: ciPaciente },
       estado: "PENDIENTE",
       total: totalCost,
-      servicios: serviciosTurno
+      servicios: serviciosTurno,
+      usuario: {
+        idUsuario: user.idUsuario
+      },
+      descuento: descuento
     };
 
     const newProforma = window.confirm("¿Deseas crear un nuevo TURNO?");
@@ -191,7 +235,6 @@ const NuevoTurno = () => {
       alert('TURNO GENERADO CORRECTAMENTE');
       clearState();
     } catch (error) {
-      //alert(error.response.data);
       console.error('Error creando institución:', turno);
     }
   };
@@ -202,6 +245,7 @@ const NuevoTurno = () => {
     setCiPaciente(event.target.value);
     if (event.target.value.length < 10) {
       setPacienteTurno(null);
+      return;
     }
     if (event.target.value.length === 10) {
 
@@ -221,18 +265,24 @@ const NuevoTurno = () => {
 
       // si el paciente esta registrado se asigna para el turno
       setPacienteTurno(paciente);
+
+
+
       //se procede a inspeccionar si el paciente no tiene proformas pendientes
       let proforma = await getProformaByPaciente(event.target.value);
 
       if (!proforma) {
         return;
       }
-
       const showProforma = window.confirm('El paciente cuenta con una proforma pendiente.¿Deseas recuperarla?');
       // se rellena la informacion con la de la proforma
+
       if (showProforma) {
-        setServiciosTurno(proforma.servicios);
-        setTotalCost(proforma.total);
+
+        for (let servicio of proforma.servicios) {
+          handleAddService(servicio.servicio, servicio.cantidad);
+        }
+
         setIdTurno(proforma.idTurno);
       }
 
@@ -261,7 +311,7 @@ const NuevoTurno = () => {
 
   };
 
-  const handlePrintTurno=async()=>{
+  const handlePrintTurno = async () => {
     if (serviciosTurno.length === 0) {
       alert("Agrega al menos un servicio para imprimir");
       return;
@@ -269,12 +319,11 @@ const NuevoTurno = () => {
 
 
     const proforma = {
-      paciente: { cedulaIdentidad: ciPaciente? ciPaciente:"" },
+      paciente: { cedulaIdentidad: ciPaciente ? ciPaciente : "" },
       total: totalCost,
       servicios: serviciosTurno
     };
 
-    console.log(proforma)
     const newProforma = window.confirm("Deseas IMPRIMIR esta PROFORMA");
     if (!newProforma) {
       alert("SE HA CANCELADO LA IMPRESIÓN");
@@ -285,13 +334,13 @@ const NuevoTurno = () => {
       const response = await axios.post(endPoint + '/api/v1/turno/impresion', proforma, {
         responseType: 'blob' // Indicar a Axios que esperamos un blob en la respuesta
       });
-  
+
       // Crear un blob a partir de la respuesta
       const file = new Blob([response.data], { type: 'application/pdf' });
-  
+
       // Crear una URL a partir del blob
       const fileURL = URL.createObjectURL(file);
-  
+
       // Abrir una nueva pestaña con la URL del PDF
       window.open(fileURL);
     } catch (error) {
@@ -301,12 +350,21 @@ const NuevoTurno = () => {
   };
 
 
+
+  const openAddServiceModaL = () => {
+
+    setIsModaladdServiceOpen(true)
+
+
+  };
+
+
+
+
   return (
     <div className="p-8 w-full">
 
       <h1 className="text-4xl font-bold mb-4 text-indigo-500">Nuevo Turno</h1>
-
-
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
 
@@ -348,9 +406,8 @@ const NuevoTurno = () => {
       </div>
 
       <div className="mt-6 flex justify-center space-x-4">
-        <button onClick={() => setIsModaladdServiceOpen(true)} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Añadir Servicio</button>
+        <button onClick={openAddServiceModaL} className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium">Añadir Servicio</button>
         <button onClick={handleDeleteBotton} className="bg-red-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium">Quitar Todos los Servicios</button>
-
       </div>
       <div className="mt-6">
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -359,10 +416,9 @@ const NuevoTurno = () => {
               <th className="px-4 py-2">Codigo</th>
               <th className="px-4 py-2">Servicio</th>
               <th className="px-4 py-2">Área</th>
-              <th className="px-4 py-2">Valor</th>
-              <th className="px-4 py-2">Descuento</th>
+              <th className="px-4 py-2">Precio Unitario</th>
               <th className="px-4 py-2">Cantidad</th>
-              <th className="px-4 py-2">Total</th>
+              <th className="px-4 py-2">SubTotal</th>
               <th className="px-4 py-2"></th>
             </tr>
           </thead>
@@ -373,13 +429,12 @@ const NuevoTurno = () => {
                 <td className="px-4 py-2 max-w-xs break-words">{servicioTurno.servicio.nombreServicio}</td>
                 <td className="px-4 py-2">{servicioTurno.servicio.area.nombreArea}</td>
                 <td className="px-4 py-2">{servicioTurno.servicio.precio}</td>
-                <td className="px-4 py-2">0</td>
                 <td className="px-4 py-2">
                   <input
                     type="number"
                     value={servicioTurno.cantidad}
                     onChange={(e) => {
-                      if(e.target.value<1){
+                      if (e.target.value < 1) {
                         alert("LA CANTIDAD NO DEBE SER MENOR A 1")
                         return;
                       }
@@ -389,6 +444,8 @@ const NuevoTurno = () => {
                     className="w-16 px-2 py-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
                   />
                 </td>
+
+
                 <td className="px-4 py-2">{servicioTurno.total}</td>
                 <td className="px-4 py-2">
                   <button onClick={() => { handleDeleteServiceOfServices(servicioTurno) }} className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">Eliminar</button>
@@ -398,9 +455,74 @@ const NuevoTurno = () => {
           </tbody>
         </table>
       </div>
+
+      <div className="mt-6 flex items-center justify-end">
+        <button
+          onClick={() => {
+            
+            setDescuento(0);
+            handleCalculateTotalCostWithDescuento(0);
+            setEnableDescuentos(!enableDescuentos); 
+            
+          }}
+          className="text-indigo-800 hover:underline"
+        >
+          {enableDescuentos ? 'Cancelar descuento' : 'Aplicar descuento'}
+        </button>
+      </div>
+
+      {enableDescuentos && (
+        <>
+          <div className="mt-6 flex items-center justify-end space-x-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Aplicar Descuento del
+            </label>
+            <input
+              type="number"
+              value={descuento}
+              onChange={(e) => {
+                if (e.target.value < 0) {
+                  alert("LA CANTIDAD NO DEBE SER MENOR A 0");
+                  return;
+                }
+                if (e.target.value > 100) {
+                  alert("LA CANTIDAD NO DEBE SER MAYOR A 100");
+                  return;
+                }
+                const descuento = parseInt(e.target.value, 10) || 0;
+                setDescuento(descuento);
+                handleCalculateTotalCostWithDescuento(descuento);
+              }}
+              className="w-16 px-2 py-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
+            />
+            %
+          </div>
+          <div className="mt-6 flex items-center justify-end space-x-4">
+            <label
+              htmlFor="total-a-pagar"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Precio sin Descuento
+            </label>
+            <input
+              type="text"
+              id="total-a-pagar"
+              value={(totalCost / (1 - descuento / 100)).toFixed(2)}
+              readOnly
+              className="ml-4 block w-24 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+            />
+          </div>
+        </>
+      )}
+
+
+
       <div className="mt-6 flex items-center justify-end space-x-4">
         <label htmlFor="total-a-pagar" className="block text-sm font-medium text-gray-700">Total a Pagar</label>
-        <input type="text" id="total-a-pagar" value={totalCost} readOnly className="ml-4 block w-24 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
+        <input type="text" id="total-a-pagar" value={totalCost.toFixed(2)} readOnly className="ml-4 block w-24 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
+      </div>
+
+      <div className="mt-6 flex items-center justify-end space-x-4">
         <button onClick={handlePrintTurno} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Imprimir</button>
       </div>
       <AddServiceModal

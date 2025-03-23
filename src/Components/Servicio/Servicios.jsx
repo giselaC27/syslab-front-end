@@ -24,7 +24,7 @@ const Servicios = () => {
     try {
       const areasResponse = await axios.get(endPoint + '/api/v1/areas');
       const serviciosResponse = await axios.get(endPoint + '/api/v1/servicios');
-      
+
       const areasWithServices = areasResponse.data.map(area => ({
         ...area,
         servicios: serviciosResponse.data.filter(servicio => servicio.area.idArea === area.idArea)
@@ -56,9 +56,9 @@ const Servicios = () => {
     if (modalType === 'area') {
       setNewArea(value);
     } else {
-      setNewService({ 
-        ...newService, 
-        [name]: type === 'checkbox' ? checked : value 
+      setNewService({
+        ...newService,
+        [name]: type === 'checkbox' ? checked : value
       });
     }
   };
@@ -68,7 +68,7 @@ const Servicios = () => {
     setIsLoading(true);
     setError(null);
     setSuccess(false);
-  
+
     if (modalType === 'editArea') {
       await handleUpdateArea();
     } else if (modalType === 'editService') {
@@ -95,8 +95,16 @@ const Servicios = () => {
       if (!newService.areaId) currentErrors.areaId = 'Este campo debe estar completo';
       if (!newService.codigoServicio) currentErrors.codigoServicio = 'Este campo debe estar completo';
       if (!newService.nombre) currentErrors.nombre = 'Este campo debe estar completo';
-      if (!newService.precio) currentErrors.precio = 'Este campo debe estar completo';
-  
+      if (!newService.precio) {
+        currentErrors.precio = 'Este campo debe estar completo';
+      } else {
+        // Verificar si el precio es un número decimal válido con punto
+        const precioValido = /^[0-9]+(\.[0-9]{1,2})?$/.test(newService.precio);
+        if (!precioValido) {
+          currentErrors.precio = 'El precio debe ser un número decimal válido (por ejemplo, 2.10)';
+        }
+      }
+
       if (Object.keys(currentErrors).length === 0) {
         try {
           const servicioData = {
@@ -112,14 +120,14 @@ const Servicios = () => {
           setTimeout(() => {
             closeModal();
             setSuccess(false);
-          }, 2000);
+          }, 1000);
         } catch (error) {
           console.error('Error saving new service:', error);
-          setError('Ocurrió un error al guardar el servicio. Por favor, inténtalo de nuevo.');
+          setError('El código de servicio ya existe verifica que sea correcto por favor.');
         }
       }
     }
-  
+
     setIsLoading(false);
     setErrors(currentErrors);
   };
@@ -133,7 +141,7 @@ const Servicios = () => {
     setNewArea(area.nombreArea);
     openModal('editArea');
   };
-  
+
   const handleEditService = (service) => {
     setEditingService(service);
     setNewService({
@@ -145,7 +153,7 @@ const Servicios = () => {
     });
     openModal('editService');
   };
-  
+
   const handleUpdateArea = async () => {
     setIsLoading(true);
     setError(null);
@@ -174,7 +182,7 @@ const Servicios = () => {
 
     setIsLoading(false);
   };
-  
+
   const handleUpdateService = async () => {
     setIsLoading(true);
     setError(null);
@@ -185,8 +193,9 @@ const Servicios = () => {
     if (!newService.codigoServicio) currentErrors.codigoServicio = 'Este campo debe estar completo';
     if (!newService.nombre) currentErrors.nombre = 'Este campo debe estar completo';
     if (!newService.precio) currentErrors.precio = 'Este campo debe estar completo';
+    
     setErrors(currentErrors);
-  
+
     if (Object.keys(currentErrors).length === 0) {
       try {
         const servicioData = {
@@ -209,8 +218,9 @@ const Servicios = () => {
         setError('Ocurrió un error al actualizar el servicio. Por favor, inténtalo de nuevo.');
       }
     }
-
     setIsLoading(false);
+    setErrors(currentErrors);
+
   };
 
   return (
@@ -237,8 +247,8 @@ const Servicios = () => {
               {area.servicios.map(servicio => (
                 <div key={servicio.idServicios} className="flex items-center space-x-4 mb-2">
                   <span className="flex-grow text-gray-700">
-                    Nombre: {servicio.nombreServicio} - Precio: $ {servicio.precio} - Código: {servicio.codigoServicio}
-                    {servicio.estaActivo ? ' - Activo' : ' - Inactivo'}
+                    <b>Código de Servicio: </b>{servicio.codigoServicio} || <b>Nombre: </b> {servicio.nombreServicio} || <b>Precio: </b> $ {servicio.precio}
+                    || <b>Estado:</b>{servicio.estaActivo ? ' - Activo' : ' - Inactivo'}
                   </span>
                   <button onClick={() => handleEditService(servicio)} className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium">Editar</button>
                 </div>
@@ -318,39 +328,39 @@ const Servicios = () => {
                   {errors.precio && <p className="text-red-500 text-xs mt-1">{errors.precio}</p>}
                 </div>
                 {modalType === 'editService' && (
-      <div className="mb-4">
-        <label className="flex items-center">
-          <input
-            type="checkbox"
-            name="estaActivo"
-            checked={newService.estaActivo}
-            onChange={handleInputChange}
-            className="form-checkbox h-5 w-5 text-indigo-600"
-          />
-          <span className="ml-2 text-sm text-gray-700">Activo</span>
-        </label>
-      </div>
-    )}
-  </>
+                  <div className="mb-4">
+                    <label className="flex items-center">
+                      <input
+                        type="checkbox"
+                        name="estaActivo"
+                        checked={newService.estaActivo}
+                        onChange={handleInputChange}
+                        className="form-checkbox h-5 w-5 text-indigo-600"
+                      />
+                      <span className="ml-2 text-sm text-gray-700">Activo</span>
+                    </label>
+                  </div>
+                )}
+              </>
             )}
-            
+
             {isLoading && <p className="text-blue-500">Cargando...</p>}
             {error && <p className="text-red-500">{error}</p>}
             {success && <p className="text-green-500">Operación exitosa</p>}
             <div className="flex justify-center space-x-4">
-              <button 
-                onClick={closeModal} 
+              <button
+                onClick={closeModal}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
                 disabled={isLoading}
               >
                 Cancelar
               </button>
-              <button 
-                onClick={handleSave} 
+              <button
+                onClick={handleSave}
                 className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium"
                 disabled={isLoading}
               >
-               {isLoading ? 'Guardando...' : 'Guardar'}
+                {isLoading ? 'Guardando...' : 'Guardar'}
               </button>
             </div>
           </div>

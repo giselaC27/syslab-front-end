@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { endPoint } from '../EndPoint';
 
-const AddServiceModal = ({ isOpen, onClose, onAdd}) => {
+const AddServiceModal = ({ isOpen, onClose, onAdd }) => {
   const [selectedService, setSelectedService] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [filter, setFilter] = useState('');
-  const [allServices, setAllServices]= useState([]);
-  
+  const [allServices, setAllServices] = useState([]);
+
   useEffect(() => {
     fetchAllServices();
   }, []);
@@ -15,11 +15,9 @@ const AddServiceModal = ({ isOpen, onClose, onAdd}) => {
   const fetchAllServices = async () => {
     try {
       const serviciosResponse = await axios.get(endPoint + '/api/v1/servicios');
-      const serviciosActivos=serviciosResponse.data.filter(elemento => elemento.estaActivo)
+      const serviciosActivos = serviciosResponse.data.filter(elemento => elemento.estaActivo)
       setAllServices(serviciosActivos)
-     console.log(serviciosResponse.data)
-      console.log(serviciosResponse);
-      
+
     } catch (error) {
       console.error('Error fetching areas and services:', error);
     }
@@ -41,13 +39,19 @@ const AddServiceModal = ({ isOpen, onClose, onAdd}) => {
       alert('Por favor, seleccione un servicio y una cantidad válida.');
     }
   };
+  
+  const handleClose= () => {
+    setSelectedService('')
+    setQuantity(1)
+    onClose();
+  };
 
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center">
       <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
-      <h2 className="text-2xl font-bold mb-4" >Añadir Servicio</h2>
+        <h2 className="text-2xl font-bold mb-4" >Añadir Servicio</h2>
         <div className="mb-4">
           <label htmlFor="filter" className="block text-sm font-medium text-gray-700">Buscar Servicio</label>
           <input
@@ -64,39 +68,38 @@ const AddServiceModal = ({ isOpen, onClose, onAdd}) => {
             <div
               key={service.idServicios}
               onClick={() => setSelectedService(service)}
-              className={`${
-                selectedService === service
-                  ? 'bg-indigo-100'
+              className={`${selectedService === service
+                  ? 'bg-indigo-500'
                   : 'hover:bg-gray-100'
-              } cursor-pointer px-3 py-2 rounded-md`}
+                } cursor-pointer px-3 py-2 rounded-md`}
             >
-              {service.nombreServicio}
+              {service.codigoServicio+"-"+service.nombreServicio}
             </div>
           ))}
         </div>
         <div className="mb-4">
           <label htmlFor="quantity" className="block text-sm font-medium text-gray-700">Cantidad</label>
           <div className="flex items-center">
-  <input
-    type="range"
-    id="quantity"
-    min="1"
-    max="10"
-    value={quantity}
-    onChange={e => setQuantity(e.target.value)}
-    className="mr-4 w-full"
-  />
-  <input
-    type="text"
-    value={quantity}
-    readOnly
-    className="w-16 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
-  />
-</div>
+            <input
+              type="range"
+              id="quantity"
+              min="1"
+              max="10"
+              value={quantity}
+              onChange={e => setQuantity(e.target.value)}
+              className="mr-4 w-full"
+            />
+            <input
+              type="text"
+              value={quantity}
+              readOnly
+              className="w-16 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none sm:text-sm"
+            />
+          </div>
         </div>
         <div className="flex justify-center space-x-4">
           <button
-            onClick={onClose}
+            onClick={ handleClose}
             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
           >
             Cancelar

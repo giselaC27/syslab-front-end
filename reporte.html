@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte de Turno</title>
+    <style>
+        body { width: 180mm; font-family: Arial, sans-serif; }
+        .datos-paciente { width: 100%; margin-bottom: 20px; }
+        .datos-paciente table { width: 100%; border-collapse: collapse; }
+        .datos-paciente td { padding: 10px 20px; }
+        .tabla-servicios { width: 100%; }
+        .tabla-servicios table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .tabla-servicios th, .tabla-servicios td { padding: 15px 20px; text-align: left; word-wrap: break-word; }
+        .tabla-servicios th { background-color: #929090; }
+        .tabla-servicios td { border-bottom: 1px solid #929090; font-size: 12px; }
+        .tabla-servicios tr:last-child td { border-bottom: none; }
+        .tabla-total { width: 20%; margin-top: 20px; float: right; }
+        .tabla-total table { width: 100%; border-collapse: collapse; }
+        .tabla-total th, .tabla-total td { padding: 10px 20px; text-align: right; }
+        .tabla-total th { background-color: #797979; }
+    </style>
+</head>
+<body>
+    <div class="datos-paciente">
+        <h1>Informe de Turnos</h1>
+        <table>
+            <tr>
+                <td><div><label><strong>Tipo de Paciente: </strong>[TipoPaciente]</label></div></td>
+                <td><div><label><strong>Dependencia: </strong>[Dependencia]</label></div></td>
+            </tr>
+            <tr>
+                <td><div><label><strong>Empresa: </strong>[Empresa]</label></div></td>
+                <td><div><label><strong>Estado del Turno: </strong>[Dependencia]</label></div></td>
+            </tr>
+            <tr>
+                <td><div><label><strong>Fecha Inicio: </strong>[Empresa]</label></div></td>
+                <td><div><label><strong>Fecha Fin: </strong>[Dependencia]</label></div></td>
+            </tr>
+        </table>
+    </div>
+    <div class="tabla-servicios">
+        <table>
+            <thead>
+                <tr>
+                    <th>Num Turno</th>
+                    <th>Fecha Turno</th>
+                    <th>estado</th>
+                    <th>Paciente</th>
+                    <th>Tipo Paciente</th>
+                    <th>Dependencia</th>
+                    <th>Empresa</th>
+                    <th>% Descuento</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Aquí irían las filas generadas dinámicamente en Java -->
+                <tr>
+                    <td>[codigoServicio]</td>
+                    <td>[nombreServicio]</td>
+                    <td>$[precio]</td>
+                    <td>[cantidad]</td>
+                    <td>$[total]</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tabla-total">
+        <table>
+            <tr>
+                <th>Total de Turnos</th>
+            </tr>
+            <tr>
+                <td>$[total]</td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>

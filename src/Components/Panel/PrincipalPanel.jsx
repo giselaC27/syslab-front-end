@@ -10,7 +10,6 @@ import Proforma from "../Turno/Proforma";
 import axios from "axios";
 import Dashboard from "../Informes/Dashboard";
 import { endPoint } from "../EndPoint";
-import Descuento from "../Descuentos/Descuento";
 const MainPanel = ({ onLogout }) => {
   const [activeView, setActiveView] = useState("default");
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
@@ -24,7 +23,7 @@ const MainPanel = ({ onLogout }) => {
         "¿ESTÁS TOTALMENTE SEGURO DE RESTABLECER EL NÚMERO DE TURNOS?. ESTE PROCESO ES IRREVERSIBLE"
       );
       if (!confirmResetNumTurnos) {
-        alert("ESTABLECIMIENTO CANCELADO");
+        alert("REINICIO CANCELADO");
         return;
       }
 
@@ -32,7 +31,7 @@ const MainPanel = ({ onLogout }) => {
         "¿ESTÁS TOTALMENTE SEGURO DE LA DECISIÓN?."
       );
       if (!confirm2ResetNumTurnos) {
-        alert("ESTABLECIMIENTO CANCELADO");
+        alert("REINICIO  CANCELADO");
         return;
       }
 
@@ -61,8 +60,6 @@ const MainPanel = ({ onLogout }) => {
         return <Administrador />;
       case "informes":
         return <Dashboard />;
-      case "descuentos":
-        return <Descuento />;
       default:
         return (
           <div
@@ -183,27 +180,28 @@ const MainPanel = ({ onLogout }) => {
                       setActiveView("servicios");
                       setIsAdminMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-100"
                   >
                     Servicios
                   </button>
-                  <button
-                    onClick={() => {
-                      setActiveView("descuentos");
-                      setIsAdminMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Descuentos
-                  </button>
+                  
                   <button
                     onClick={() => {
                       setActiveView("gestionPersonal");
                       setIsAdminMenuOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-100"
                   >
                     Gestión de Personal
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveView("RESTABLECER NÚMERO DE TURNOS");
+                      resetNumTurnos();
+                    }}
+                    className="block w-full text-left px-4 py-2 text-sm text-white-700 bg-red-700 hover:bg-red-300"
+                  >
+                    REINICIAR NÚMERO DE TURNOS
                   </button>
                 </div>
               )}

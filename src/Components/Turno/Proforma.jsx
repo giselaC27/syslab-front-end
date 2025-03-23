@@ -110,7 +110,10 @@ const Proforma = () => {
     const proforma = {
       paciente: { cedulaIdentidad: ciPaciente },
       total: totalCost,
-      servicios: serviciosTurno
+      servicios: serviciosTurno,
+      usuario:{
+        idUsuario:1
+      }
     };
 
     console.log(proforma)
@@ -246,7 +249,6 @@ const Proforma = () => {
               <th className="px-4 py-2">Servicio</th>
               <th className="px-4 py-2">Área</th>
               <th className="px-4 py-2">Valor</th>
-              <th className="px-4 py-2">Descuento</th>
               <th className="px-4 py-2">Cantidad</th>
               <th className="px-4 py-2">Total</th>
               <th className="px-4 py-2"></th>
@@ -258,8 +260,7 @@ const Proforma = () => {
                 <td className="px-4 py-2">{servicioTurno.servicio.codigoServicio}</td>
                 <td className="px-4 py-2 max-w-xs break-words">{servicioTurno.servicio.nombreServicio}</td>
                 <td className="px-4 py-2">{servicioTurno.servicio.area.nombreArea}</td>
-                <td className="px-4 py-2">{servicioTurno.servicio.precio}</td>
-                <td className="px-4 py-2">0</td>
+                <td className="px-4 py-2">{(servicioTurno.servicio.precio).toFixed(2)}</td>
                 <td className="px-4 py-2">
                   <input
                     type="number"
@@ -275,7 +276,7 @@ const Proforma = () => {
                     className="w-16 px-2 py-1 text-center border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-500"
                   />
                 </td>
-                <td className="px-4 py-2">{servicioTurno.total}</td>
+                <td className="px-4 py-2">{servicioTurno.total.toFixed(2)}</td>
                 <td className="px-4 py-2">
                   <button onClick={() => { handleDeleteServiceOfServices(servicioTurno) }} className="ml-2 bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded-md text-xs font-medium">Eliminar</button>
                 </td>
@@ -286,7 +287,7 @@ const Proforma = () => {
       </div>
       <div className="mt-6 flex items-center justify-end space-x-4">
         <label htmlFor="total-a-pagar" className="block text-sm font-medium text-gray-700">Total a Pagar</label>
-        <input type="text" id="total-a-pagar" value={totalCost} readOnly className="ml-4 block w-24 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
+        <input type="text" id="total-a-pagar" value={totalCost.toFixed(2)} readOnly className="ml-4 block w-24 px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm" />
         <button onClick={handlePrintTurno} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Imprimir</button>
       </div>
       <AddServiceModal

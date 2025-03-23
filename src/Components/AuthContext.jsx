@@ -15,7 +15,6 @@ export const AuthProvider = ({ children }) => {
       const userObject = JSON.parse(userFromCookie);
       setIsLoggedIn(true);
       setUser(userObject);
-      console.log("Usuario desde el AuthContext:", userObject);
     } else {
       setIsLoggedIn(false);
       setUser(null);
@@ -27,18 +26,17 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const handleLogin = async (userData) => {
-    console.log("Datos de usuario para login:", userData);
     try {
       const response = await axios.post(
          endPoint + "/api/v1/usuario/sesion",
         { cedulaIdentidad: userData.cedulaIdentidad, contrasena: userData.contrasena }
       );
+      console.log(endPoint + "/api/v1/usuario/sesion")
       if (response.data) {
         setIsLoggedIn(true);
         setUser(response.data);
         const userDataJson = JSON.stringify(response.data);
         Cookies.set("user", userDataJson);
-        console.log("Datos de usuario después de login:", response.data);
         return true;
       } else {
         console.error("Error de autenticación:", response.data);

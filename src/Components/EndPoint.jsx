@@ -1,1 +1,1 @@
-export const endPoint = "http://localhost:8082"
+export const endPoint = "http://10.16.1.70:8082"

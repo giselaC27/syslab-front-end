@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { endPoint } from '../EndPoint';
-const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, tiposPacientes, generos }) => {
+const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, tiposPacientes, generos, paciente }) => {
   const initialFormValues = {
-    cedulaIdentidad: '',
+    cedulaIdentidad: paciente ? paciente.cedulaIdentidad:'',
     nombre: '',
     primerApellido: '',
     segundoApellido: '',
@@ -50,6 +50,9 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
   }, [formValues]);
 
   const handleChange = (e) => {
+    if(paciente){
+      formValues.cedulaIdentidad=paciente.cedulaIdentidad;
+    }
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
@@ -62,11 +65,15 @@ const CrearPacienteModal = ({ isOpen, onClose, onSave, institutions, empresas, t
       setIsLoading(true);
       try {
         const newPatient = {
+          idPaciente: 0,
           ...formValues,
           dependencia: institutions.find(inst => inst.descripcion === formValues.dependencia),
           empresa: empresas.find(empr => empr.descripcion === formValues.empresa),
           tipoPaciente: tiposPacientes.find(tps => tps.descripcion === formValues.tipoPaciente),
         };
+        if (paciente) {
+          newPatient.idPaciente = paciente.idPaciente;
+        }
         await axios.post(endPoint + '/api/v1/paciente', newPatient);
         setSuccess(true);
         setIsLoading(false);

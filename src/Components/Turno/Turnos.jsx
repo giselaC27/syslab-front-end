@@ -9,8 +9,7 @@ const Turnos = () => {
   const [selectedTurno, setSelectedTurno] = useState(null);
   const [activeTab, setActiveTab] = useState("TODOS");
   const [ciPacienteSearched, setCiPacienteSearched] = useState("");
-  const [selectedPrinter, setSelectedPrinter] = useState("NINGUNA");
-
+  const [descuentosPaciente, setDescuentosPaciente]=useState([]);
   const authContext = useContext(AuthContext);
   const { user } = authContext;
 
@@ -91,6 +90,7 @@ const Turnos = () => {
       const response = await axios.get(endPoint + `/api/v1/turnos/ci/${ciPacienteSearched}`);
       setTurnos(response.data);
       setActiveTab("TODOS");
+      setCiPacienteSearched('');
     } catch (error) {
       console.error('Error:', error);
       alert('Error:', error.response.data);
@@ -101,21 +101,23 @@ const Turnos = () => {
     setCiPacienteSearched(event.target.value);
   };
 
+
   return (
     <div className="p-8 w-full">
       <h1 className="text-4xl font-bold mb-4 text-indigo-500">Turnos</h1>
 
-     
+
 
       {!viewDetails ? (
         <>
           <div className="flex items-center space-x-4 mb-6">
-            <label htmlFor="buscar" className="block text-sm font-medium text-gray-700">Buscar</label>
+            <label htmlFor="buscar" className="block text-sm font-medium text-gray-700">Buscar por CI del paciente</label>
             <input
               type="text"
               id="buscar"
               value={ciPacienteSearched}
               onChange={handleInputChange}
+              placeholder='Buscar por cédula del paciente'
               className="mt-1 block w-full px-3 py-2 bg-white bg-opacity-50 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
             />
             <button onClick={fetchTurnosByPaciente} className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-md text-sm font-medium">Buscar</button>
@@ -148,26 +150,26 @@ const Turnos = () => {
                 Turnos Recibidos
               </button>
             </div>
-            
+
           </div>
           <div className="flex justify-center space-x-2 p-4">
-      <div className="flex items-center">
-        <div className="w-4 h-4 bg-red-500 rounded-full"></div>
-        <span className="ml-2">PENDIENTE</span>
-      </div>
-      <div className="flex items-center">
-        <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
-        <span className="ml-2">PAGADO</span>
-      </div>
-      <div className="flex items-center">
-        <div className="w-4 h-4 bg-green-500 rounded-full"></div>
-        <span className="ml-2">RECIBIDO</span>
-      </div>
-      <div className="flex items-center">
-        <div className="w-4 h-4 bg-red-900 rounded-full"></div>
-        <span className="ml-2">CANCELADO</span>
-      </div>
-    </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-red-500 rounded-full"></div>
+              <span className="ml-2">PENDIENTE</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-yellow-500 rounded-full"></div>
+              <span className="ml-2">PAGADO</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+              <span className="ml-2">RECIBIDO</span>
+            </div>
+            <div className="flex items-center">
+              <div className="w-4 h-4 bg-red-900 rounded-full"></div>
+              <span className="ml-2">CANCELADO</span>
+            </div>
+          </div>
 
           <div className="overflow-x-auto mb-6">
             <div className="max-h-80 overflow-y-auto">
@@ -204,7 +206,7 @@ const Turnos = () => {
                         <td className="px-4 py-2">{fecha}</td>
                         <td className="px-4 py-2">{turno.paciente.cedulaIdentidad}</td>
                         <td className="px-4 py-2">{nombreCompleto}</td>
-                        <td className="px-4 py-2">{turno.total}</td>
+                        <td className="px-4 py-2">{turno.total.toFixed(2)} $</td>
                         <td className="px-4 py-2">
                           <div className="w-full h-4 bg-gray-200 rounded">
                             <div className={`${getEstadoBarra(turno.estado)} h-4 rounded`}></div>
@@ -219,7 +221,7 @@ const Turnos = () => {
                           </button>
                         </td>
 
-                       
+
                       </tr>
                     );
                   })}
@@ -233,7 +235,7 @@ const Turnos = () => {
           <h3 className="text-xl font-bold mb-4">DETALLE</h3>
 
           <div className="flex justify-end space-x-4 mt-6">
-            {(user && user.rol === 'secretario' && selectedTurno.estado=== "PENDIENTE" && selectedTurno.estado!=="CANCELADO") && (
+            {(user && (user.rol === 'secretario' || user.rol === 'administrador') && selectedTurno.estado === "PENDIENTE" && selectedTurno.estado !== "CANCELADO") && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "CANCELADO")}
                 className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -243,12 +245,12 @@ const Turnos = () => {
             )}
           </div>
 
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-4 gap-4 mb-6">
             <div>
               <label className="block text-sm font-medium text-gray-700">Nro de Turno</label>
               <input
                 type="text"
-                value={selectedTurno.idTurno}
+                value={selectedTurno.numTurno}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
@@ -271,15 +273,17 @@ const Turnos = () => {
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-gray-700">Total</label>
+              <label className="block text-sm font-medium text-gray-700">Responsable Agendamiento turno</label>
               <input
                 type="text"
-                value={selectedTurno.total}
+                value={selectedTurno.usuario.cedulaIdentidad+" || "+ [selectedTurno.usuario.nombre]}
                 readOnly
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
             </div>
+            
             <div>
               <label className="block text-sm font-medium text-gray-700">Estado</label>
               <input
@@ -289,19 +293,46 @@ const Turnos = () => {
                 className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
               />
             </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">% de Descuento Aplicado </label>
+              <input
+                type="text"
+                value={selectedTurno.descuento}
+                readOnly
+                className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Valor Descontado($) </label>
+              <input
+                type="text"
+                value={((selectedTurno.total/(1-(selectedTurno.descuento/100)))*(selectedTurno.descuento/100)).toFixed(2)}
+                readOnly
+                className="mt-1 block w-full px-3 py-2 bg-gray-100 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700">Total por Cobrar ($) </label>
+              <input
+                type="text"
+                value={selectedTurno.total.toFixed(2)} 
+                readOnly
+                className="mt-1 block w-full px-3 py-2 bg-green-400 border border-gray-300 rounded-md shadow-sm sm:text-sm"
+              />
+            </div>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-              <thead className="bg-indigo-400">
+            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+              <thead className="bg-indigo-600">
                 <tr>
-                  <th className="px-4 py-2">Número</th>
+                  <th className="px-4 py-2">Código</th>
                   <th className="px-4 py-2">Servicio</th>
                   <th className="px-4 py-2">Área</th>
-                  <th className="px-4 py-2">Valor</th>
-                  <th className="px-4 py-2">Descuento</th>
+                  <th className="px-4 py-2">Precio unitario</th>
                   <th className="px-4 py-2">Cantidad</th>
-                  <th className="px-4 py-2">Total</th>
+                  <th className="px-4 py-2">Subtotal</th>
                 </tr>
               </thead>
               <tbody>
@@ -310,10 +341,9 @@ const Turnos = () => {
                     <td className="px-4 py-2">{servicioTurno.servicio.codigoServicio}</td>
                     <td className="px-4 py-2 max-w-xs break-words">{servicioTurno.servicio.nombreServicio}</td>
                     <td className="px-4 py-2">{servicioTurno.servicio.area.nombreArea}</td>
-                    <td className="px-4 py-2">{servicioTurno.servicio.precio}</td>
-                    <td className="px-4 py-2">0</td>
+                    <td className="px-4 py-2">$ {servicioTurno.servicio.precio}</td>
                     <td className="px-4 py-2">{servicioTurno.cantidad}</td>
-                    <td className="px-4 py-2">{servicioTurno.total}</td>
+                    <td className="px-4 py-2">$ {servicioTurno.total}</td>
                   </tr>
                 ))}
               </tbody>
@@ -321,7 +351,7 @@ const Turnos = () => {
           </div>
 
           <div className="flex justify-end space-x-4 mt-6">
-            {(user && user.rol === 'financiero' && selectedTurno.estado==="PAGADO") && (
+            {(user && (user.rol === 'financiero'|| user.rol === 'administrador') && selectedTurno.estado === "PAGADO") && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "PENDIENTE")}
                 className="bg-red-500 hover:bg-red-200 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -329,7 +359,7 @@ const Turnos = () => {
                 Marcar como Pendiente
               </button>
             )}
-            {(user && user.rol === 'financiero'&& selectedTurno.estado==="PENDIENTE") && (
+            {(user && (user.rol === 'financiero'|| user.rol === 'administrador') && selectedTurno.estado === "PENDIENTE") && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "PAGADO")}
                 className="bg-yellow-500 hover:bg-yellow-200 text-white px-4 py-2 rounded-md text-sm font-medium"
@@ -337,7 +367,7 @@ const Turnos = () => {
                 Marcar como Pagado
               </button>
             )}
-            {(user && user.rol === 'secretario' && selectedTurno.estado === ("PAGADO") && selectedTurno.estado!=="RECIBIDO") && (
+            {(user && (user.rol === 'secretario'|| user.rol === 'administrador') && selectedTurno.estado === ("PAGADO") && selectedTurno.estado !== "RECIBIDO") && (
               <button
                 onClick={() => handleChangeStateTurno(selectedTurno.idTurno, "RECIBIDO")}
                 className="bg-green-500 hover:bg-green-200 text-white px-4 py-2 rounded-md text-sm font-medium"

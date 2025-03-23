@@ -33,6 +33,7 @@ const Administrador = () => {
   };
 
   const openEditModal = (user) => {
+    user.contrasena="";
     setEditUser({...user});
     setIsEditModalOpen(true);
   };
@@ -138,7 +139,7 @@ const Administrador = () => {
               <tr key={index}>
                 <td className="py-2 px-4 border-b">{user.nombre}</td>
                 <td className="py-2 px-4 border-b">{user.cedulaIdentidad}</td>
-                <td className="py-2 px-4 border-b">{user.rol}</td>
+                <td className="py-2 px-4 border-b">{user.rol.toUpperCase()}</td>
                 <td className="py-2 px-4 border-b">{user.activo ? 'Activo' : 'Inactivo'}</td>
                 <td className="py-2 px-4 border-b">
                   <button onClick={() => openEditModal(user)} className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-md text-sm font-medium mr-2">Editar</button>
@@ -238,7 +239,7 @@ const Administrador = () => {
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700">Contraseña</label>
               <input
-                type="text"
+                type="password"
                 name="contrasena"
                 value={editUser.contrasena}
                 onChange={handleInputChange}
